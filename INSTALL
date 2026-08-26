@@ -1,0 +1,21 @@
+runv7 — INSTALL
+===============
+
+runv7 is a set of scripts; there is nothing to compile.
+
+Requirements:
+  * simh (`pdp11` on the PATH)
+  * curl
+  * python3 (3.6+)
+
+Build and install:
+
+    ./configure            # optional; sets the PREFIX
+    make                   # nothing to build
+    make check             # ./fetch lists the available images
+    make install           # installs fetch/boot.py + ini/ under PREFIX
+
+Or just run in place:
+
+    ./fetch v7-pcollinson
+    ./boot.py --ini ini/v7-pcollinson.ini

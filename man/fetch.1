@@ -1,0 +1,27 @@
+.TH FETCH 1 "August 2026" "runv7" "User Commands"
+.SH NAME
+fetch \- download a V6 or V7 disk image for runv7
+.SH SYNOPSIS
+.B fetch
+.RI [ name | all ]
+.SH DESCRIPTION
+.B fetch
+downloads and unpacks a Research Unix V6 or V7 disk image (or the V7 source
+tape) named in the
+.B images.tsv
+manifest, into the current directory, so the per-image simh configs in
+.BR ini/
+can attach it.
+With no argument it lists the available images.
+With
+.B all
+it fetches every image.
+.SH FILES
+.TP
+.B images.tsv
+the manifest of images (name, URL, simh config, boot sequence, flags).
+.TP
+.BR ini/*.ini
+one simh config per image.
+.SH SEE ALSO
+.BR boot.py (1)

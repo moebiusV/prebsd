@@ -1,0 +1,25 @@
+.TH BOOT 1 "August 2026" "runv7" "User Commands"
+.SH NAME
+boot.py \- boot a V6/V7 disk image headlessly on simh
+.SH SYNOPSIS
+.B boot.py
+.RB [ \-\-ini " file" ]
+.RB [ \-\-boot " seq" ]
+.RB [ \-\-cmd " command" ]
+.SH DESCRIPTION
+.B boot.py
+starts simh with an
+.B .ini
+config and drives its console over the telnet listener, walking the given
+boot sequence, then optionally runs a command and captures the output.
+.SH OPTIONS
+.TP
+.BI \-\-ini " file"
+simh config (default
+.BR headless.ini ).
+.TP
+.BI \-\-boot " seq"
+console boot sequence
+.IR SEND > EXPECT |...
+.SH SEE ALSO
+.BR fetch (1)

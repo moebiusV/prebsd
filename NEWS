@@ -1,0 +1,6 @@
+runv7 NEWS
+==========
+
+0.1 (2026-08-26)
+  * Initial release: fetch V6/V7 disk images, per-image simh configs, and a
+    headless console driver (boot.py).

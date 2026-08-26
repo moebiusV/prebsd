@@ -1,0 +1,4 @@
+runv7 authors:
+
+David — fetch, per-image simh configs, the boot.py console driver, and the
+image manifest.
