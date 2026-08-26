@@ -1,0 +1,93 @@
+#!/bin/sh
+# fetch — download a V6/V7 disk image (or the source tape) for runv7.
+#
+#   ./fetch             list available images
+#   ./fetch <name>      download + unpack the named image into this directory
+#   ./fetch all         download everything
+#
+# The manifest is images.tsv; the download lands here so the .ini files
+# (`att rp0 rp06-0.disk` etc.) find it.  Large images are git-ignored.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+cd "$HERE"
+
+list_images() {
+    awk -F'\t' '!/^#/ && NF>=5 && $1!="" { printf "  %-14s %s\n", $1, $2 }' images.tsv
+}
+
+name="${1:-}"
+
+if [ $# -eq 0 ] || [ -z "$name" ]; then
+    echo "usage: $0 <name|all>"
+    echo "available images:"
+    list_images
+    exit 0
+fi
+
+get_urls() {
+    awk -F'\t' -v n="$1" '$1==n { print $3 }' images.tsv
+}
+
+dl() {  # dl URL -> filename (last path component, de-URL-encoded)
+    url="$1"
+    out="${url##*/}"
+    # strip a SourceForge /download suffix query, if any
+    out="${out%%\?*}"
+    if [ -f "$out" ]; then
+        echo "  have $out (skip)"
+        return
+    fi
+    echo "  fetch $url"
+    curl -L --retry 3 -o "$out.part" "$url"
+    mv "$out.part" "$out"
+}
+
+fetch_one() {
+    n="$1"
+    urls="$(get_urls "$n")"
+    [ -n "$urls" ] || { echo "unknown image: $n"; echo; echo "available:"; list_images; exit 1; }
+    echo "== $n =="
+    for u in $urls; do
+        dl "$u"
+    done
+    unpack "$n"
+}
+
+unpack() {
+    n="$1"
+    # gunzip *.gz in place (keep the .gz); unxz *.xz; unzip *.zip
+    for gz in ./*.gz; do
+        [ -f "$gz" ] || continue
+        base="${gz%.gz}"
+        [ -f "$base" ] || gunzip -k "$gz"
+    done
+    for xz in ./*.xz; do
+        [ -f "$xz" ] || continue
+        base="${xz%.xz}"
+        [ -f "$base" ] || unxz -k "$xz"
+    done
+    for z in ./*.zip; do
+        [ -f "$z" ] || continue
+        unzip -o "$z" >/dev/null
+    done
+    # v6's images are rk0.gz..rk2.gz, but the .ini attaches them as "rk0".."rk2"
+    case "$n" in
+        v6-pcollinson)
+            for i in 0 1 2; do
+                [ -f "rk$i" ] || [ ! -f "rk$i.gz" ] || gunzip -c "rk$i.gz" > "rk$i"
+            done
+            ;;
+    esac
+}
+
+if [ "$name" = "all" ]; then
+    for n in $(awk -F'\t' '!/^#/ && NF>=5 && $1!="" { print $1 }' images.tsv); do
+        fetch_one "$n"
+    done
+else
+    fetch_one "$name"
+fi
+
+ini="$(awk -F'\t' -v n="$name" '$1==n{print $4}' images.tsv)"
+echo "done.  boot with: ./boot.py --ini ini/$ini"
