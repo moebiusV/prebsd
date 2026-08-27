@@ -65,4 +65,27 @@ Where each image came from, who made it, and the page it was fetched from:
 | V7 (RL02) | Bob Supnik | <http://simh.trailing-edge.com/kits/uv7swre.zip> | <http://simh.trailing-edge.com/> |
 | V7 (pure install) | narukeh | <https://github.com/narukeh/research_unix_v7> (`rp06-0.disk.xz`) | <https://github.com/narukeh/research_unix_v7> |
 | V7 (tape) | Keith Bostic / gunkies | gunkies install guide | <https://gunkies.org/wiki/Installing_v7_on_SIMH> |
-| 32V (VAX) | TUHS / Caldera | 32V distribution tape | <https://www.tuhs.org/Archive/> |
+| 32V (tape) | TUHS / Caldera | 32V distribution tape | <https://www.tuhs.org/Archive/> |
+
+The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) were built by this
+project from that tape and are distributed directly.
+
+## Mounting (kenfsmount)
+
+The RP06 images (V7 `rp06-0.disk`, 32V `32v-rp06.disk`) share one partition
+layout: root at block 0, swap at 5000, `/usr` at 18392 (byte offset 9416704).
+
+    # V7 (rp06-0.disk)
+    kenfsmount -v 7  rp06-0.disk mnt
+    kenfsmount -v 7  -o offset=9416704 rp06-0.disk mnt/usr
+
+    # 32V (32v-rp06.disk)
+    kenfsmount -v 32 32v-rp06.disk mnt
+    kenfsmount -v 32 -o offset=9416704 32v-rp06.disk mnt/usr
+
+    # single-filesystem images
+    kenfsmount -v 32 32v-root.disk mnt       # 32V root only
+    kenfsmount -v 6  rk0 mnt                 # V6 root only
+
+Mount the root first, then nest the `/usr` mount on top (`-o allow_other` +
+`user_allow_other`).
