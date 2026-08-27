@@ -8,8 +8,10 @@ against the ported ones.
 ```
 ./fetch                         # list images
 ./fetch v7-pcollinson           # download + unpack one
-./boot.py --ini ini/v7-pcollinson.ini
-./boot.py --ini ini/v7-pcollinson.ini --cmd 'cc -S /tmp/x.c'
+./boot.py --list                # numbered list of bootable images
+./boot.py --img 1               # boot the 1st image from --list
+./boot.py --img 1 --cmd 'cc -S /tmp/x.c'   # boot + run a command
+./boot.py --ini ini/v7-pcollinson.ini       # or name the ini directly
 ```
 
 Requirements: `simh` (`pdp11` on the PATH), `curl`, and Python 3.  The console
@@ -43,8 +45,11 @@ compiler, and pull the source tree off the tape or a git mirror.
 
 * simh must not run while the disk is mounted by `v7fuse` (see that project's
   flock coordination).  Stage files with FUSE, unmount, then boot.
-* V7's console is in KSR uppercase mode, so `cat` of a lowercase file shows
-  uppercase; dump bytes with `od -b` for exact content.
+* V7's KL11 console driver hard-codes `LCASE` (`usr/sys/dev/kl.c`), assuming a
+  Model 33 Teletype — it uppercases output and lowercases typed input, so `cc
+  -S` arrives as `cc -s` (strip) and produces no `.s`.  `boot.py` sends
+  `stty -lcase` after boot by default, restoring mixed case.  The permanent fix
+  would be a kernel rebuild without `LCASE` in `kl.c`.
 * The `.ini` files enable `SET CONSOLE TELNET=10023`; `boot.py` answers the
   telnet IAC negotiation so option bytes don't leak into the output.
 

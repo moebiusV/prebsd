@@ -13,6 +13,11 @@ over the telnet listener the .ini enables (SET CONSOLE TELNET).  A raw TCP
 driver must answer telnet IAC negotiation (refuse WILL/DO) or option bytes leak
 into the output.
 
+V7's KL11 console driver hard-codes LCASE (usr/sys/dev/kl.c) on the assumption
+that the console is a Model 33 Teletype, so it uppercases output and lowercases
+typed input (the `-S` -> `-s` trap).  After the boot sequence reaches the shell
+this driver sends `stty -lcase` by default, restoring a full mixed-case console.
+
 This is the temporary Python driver; a C rewrite is planned.
 """
 import argparse
@@ -78,17 +83,85 @@ def negotiate(sock):
     return out
 
 
+def load_manifest():
+    """Return images.tsv as a list of dicts, one per image.
+
+    Columns (tab-separated): name, description, urls, ini, boot, cc, src.
+    The `boot` value is kept verbatim (a trailing space can be meaningful —
+    `unix># ` = expect the "# " prompt, not just "#").
+    """
+    tsv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images.tsv')
+    rows = []
+    try:
+        with open(tsv) as f:
+            for line in f:
+                if not line.strip() or line.lstrip().startswith('#'):
+                    continue
+                cols = line.rstrip('\n').split('\t')
+                if len(cols) < 5 or not cols[0].strip():
+                    continue
+                rows.append({
+                    'name': cols[0].strip(),
+                    'desc': cols[1].strip() if len(cols) > 1 else '',
+                    'ini': cols[3].strip() if len(cols) > 3 else '',
+                    'boot': cols[4] if len(cols) > 4 else '',
+                })
+    except OSError:
+        pass
+    return rows
+
+
+def lookup_boot(ini):
+    """Return the boot sequence for `ini` from images.tsv, else None.
+
+    The manifest's `ini` column names the simh config and its `boot` column
+    is that image's SEND>EXPECT sequence, so `--ini ini/v7-rl.ini` picks up
+    `boot>:|rl(0,0)rl2unix>mem =` without the caller remembering it.
+    """
+    base = os.path.basename(ini)
+    for row in load_manifest():
+        if os.path.basename(row['ini']) == base:
+            return row['boot'] or None
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--ini', default='headless.ini', help='simh config file')
-    ap.add_argument('--boot', default='boot>:|hp(0,0)unix>mem =',
-                    help='console boot sequence SEND>EXPECT|SEND>EXPECT')
+    ap.add_argument('--boot', default=None,
+                    help='console boot sequence SEND>EXPECT|SEND>EXPECT '
+                         '(default: looked up from images.tsv by --ini)')
+    ap.add_argument('--list', action='store_true',
+                    help='list bootable images from images.tsv and exit')
+    ap.add_argument('--img', type=int, default=None, metavar='N',
+                    help='boot the Nth image from --list (1-based)')
     ap.add_argument('--port', type=int, default=10023, help='telnet port')
     ap.add_argument('--cmd', default=None,
                     help='command to run after boot (captured)')
     ap.add_argument('--timeout', type=int, default=90,
                     help='max seconds to wait for each boot marker')
     args = ap.parse_args()
+
+    images = load_manifest()
+    if args.list:
+        print('bootable images (images.tsv):')
+        for i, row in enumerate(images, 1):
+            boot = row['boot'].strip() if row['boot'] else '(manual install)'
+            print('  %2d  %-16s %-44s %s' % (i, row['name'], row['desc'], boot))
+        return 0
+
+    if args.img is not None:
+        if args.img < 1 or args.img > len(images):
+            print('no such image: %d (run --list for the index)' % args.img,
+                  file=sys.stderr)
+            return 1
+        row = images[args.img - 1]
+        args.ini = 'ini/' + row['ini']
+        if args.boot is None:
+            args.boot = row['boot']
+
+    if args.boot is None:
+        args.boot = lookup_boot(args.ini) or 'boot>:|hp(0,0)unix>mem ='
 
     simh = os.environ.get('SIMH', 'pdp11')
     ini_dir = os.path.dirname(os.path.abspath(args.ini)) or '.'
@@ -154,6 +227,18 @@ def main():
         if not wait_for(expect, args.timeout):
             print('[driver] TIMEOUT waiting for %r' % expect)
             break
+
+    # V7's KL11 console driver hard-codes LCASE in t_flags at open time
+    # (usr/sys/dev/kl.c: tp->t_flags = EVENP|LCASE|...), on the assumption
+    # that the console is a Model 33 Teletype — which could only print
+    # UPPERCASE.  Our telnet console is a full mixed-case terminal, so once
+    # we reach the shell, clear the flag: output then keeps its case, and
+    # input stops lowercasing typed uppercase (the -S -> -s trap).  All the
+    # characters in this command are already lowercase, so it survives the
+    # LCASE input translation untouched.
+    sock.sendall(b'stty -lcase\r')
+    print('[driver] sent: stty -lcase')
+    poll(0.5)
 
     if args.cmd:
         sock.sendall((args.cmd + '\r').encode())

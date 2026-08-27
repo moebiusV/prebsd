@@ -5,11 +5,13 @@
 #   ./fetch <name>      download + unpack the named image into this directory
 #   ./fetch all         download everything
 #
-# The manifest is images.tsv; the download lands here so the .ini files
-# (`att rp0 rp06-0.disk` etc.) find it.  Large images are git-ignored.
+# The manifest is images.tsv; the download lands in images/ — the .ini files
+# reference them as `../images/...` (simh runs with cwd=ini/).  Large images
+# are git-ignored.
 set -eu
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
+DEST="$HERE/images"
 cd "$HERE"
 
 list_images() {
@@ -32,15 +34,21 @@ get_urls() {
 dl() {  # dl URL -> filename (last path component, de-URL-encoded)
     url="$1"
     out="${url##*/}"
-    # strip a SourceForge /download suffix query, if any
+    # SourceForge "direct download" URLs end in /download — the real
+    # filename is the path segment just before it.
+    if [ "$out" = "download" ]; then
+        out="${url%/download}"
+        out="${out##*/}"
+    fi
+    # strip a trailing query string, if any
     out="${out%%\?*}"
-    if [ -f "$out" ]; then
+    if [ -f "$DEST/$out" ]; then
         echo "  have $out (skip)"
         return
     fi
     echo "  fetch $url"
-    curl -L --retry 3 -o "$out.part" "$url"
-    mv "$out.part" "$out"
+    curl -L --retry 3 -o "$DEST/$out.part" "$url"
+    mv "$DEST/$out.part" "$DEST/$out"
 }
 
 fetch_one() {
@@ -56,26 +64,37 @@ fetch_one() {
 
 unpack() {
     n="$1"
+    # narukeh's .xz also decompresses to rp06-0.disk — the same name
+    # pcollinson's .gz uses.  Rename it up front so the two V7 RP06 images
+    # can't collide regardless of fetch order.
+    if [ "$n" = "v7-narukeh" ] && [ -f "$DEST/rp06-0.disk.xz" ]; then
+        mv "$DEST/rp06-0.disk.xz" "$DEST/rp06-0-narukeh.disk.xz"
+    fi
     # gunzip *.gz in place (keep the .gz); unxz *.xz; unzip *.zip
-    for gz in ./*.gz; do
+    for gz in "$DEST"/*.gz; do
         [ -f "$gz" ] || continue
         base="${gz%.gz}"
         [ -f "$base" ] || gunzip -k "$gz"
     done
-    for xz in ./*.xz; do
+    for xz in "$DEST"/*.xz; do
         [ -f "$xz" ] || continue
         base="${xz%.xz}"
         [ -f "$base" ] || unxz -k "$xz"
     done
-    for z in ./*.zip; do
+    for bz in "$DEST"/*.bz2; do
+        [ -f "$bz" ] || continue
+        base="${bz%.bz2}"
+        [ -f "$base" ] || bunzip2 -k "$bz"
+    done
+    for z in "$DEST"/*.zip; do
         [ -f "$z" ] || continue
-        unzip -o "$z" >/dev/null
+        unzip -o "$z" -d "$DEST" >/dev/null
     done
     # v6's images are rk0.gz..rk2.gz, but the .ini attaches them as "rk0".."rk2"
     case "$n" in
         v6-pcollinson)
             for i in 0 1 2; do
-                [ -f "rk$i" ] || [ ! -f "rk$i.gz" ] || gunzip -c "rk$i.gz" > "rk$i"
+                [ -f "$DEST/rk$i" ] || [ ! -f "$DEST/rk$i.gz" ] || gunzip -c "$DEST/rk$i.gz" > "$DEST/rk$i"
             done
             ;;
     esac

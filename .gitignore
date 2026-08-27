@@ -1,0 +1,7 @@
+# downloaded disk images, tapes, compressed sources, and simh-created
+# device placeholders (git-ignored — refetched on demand)
+images/*
+
+# python
+__pycache__/
+*.pyc

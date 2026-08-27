@@ -8,12 +8,10 @@
 #   cc          has the C compiler (cc/c0/c1/as/ld)?  yes/no
 #   src         has the Unix source tree (/usr/src) on the image?  yes/no
 #
-# NOTE: no prebuilt bootable disk ships with /usr/src.  The compiler is present
-# on the bootable images; the full source tree is distributed separately (the
-# Keith Bostic V7 tape, or the pcollinson/narukeh git trees).  "cc+src" is
-# achieved by combining a bootable disk with the source tape.
+# Bootable disk images only — no tape-only distribution/install images.
+# No prebuilt bootable disk ships with /usr/src; the source tree is distributed
+# separately (git mirrors, or a distribution tape).
 v7-pcollinson	V7, RP06 on a PDP-11/70 (pcollinson/unixv7-extras)	https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz	v7-pcollinson.ini	boot>:|hp(0,0)unix>mem =	yes	no
-v7-rl	V7, RL02 on a PDP-11/45 (SIMH uv7swre kit)	http://simh.trailing-edge.com/kits/uv7swre.zip	v7-rl.ini	rl(0,0)rl2unix>mem =	yes	no
+v7-rl	V7, RL02 on a PDP-11/45 (SIMH uv7swre kit)	http://simh.trailing-edge.com/kits/uv7swre.zip	v7-rl.ini	boot>:|rl(0,0)rl2unix>mem =	yes	no
 v7-narukeh	V7, RP06 pure install (narukeh/research_unix_v7)	https://github.com/narukeh/research_unix_v7/raw/main/rp06-0.disk.xz	v7-narukeh.ini	boot>:|hp(0,0)unix>mem =	yes	no
 v6-pcollinson	V6, three RK05 disks on a PDP-11/40 (pcollinson/unixv6-extras)	https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz	v6-pcollinson.ini	unix># 	yes	no
-v7-keithbostic	V7 full distribution, tape install (Keith Bostic)	https://sourceforge.net/projects/bsd42/files/Install%20tapes/Research%20Unix/Unix-v7-Keith-Bostic.tap.bz2/download	v7-tape.ini		yes	yes
