@@ -1,0 +1,25 @@
+TODO
+
+Make a single `prebsd` binary, written in C17, with subcommands, replacing the
+current scripts:
+
+    prebsd fetch      download bootable images and tapes
+    prebsd run        boot an image on simh and drive the console
+    prebsd mount      mount an image (wrap kenfsmount)
+
+Mapping from today's tooling:
+
+    fetch               -> prebsd fetch
+    boot.py             -> prebsd run
+    vax/tdcopy.py       -> prebsd fetch / run   (32V tape -> disk)
+    vax/install32v.py   -> prebsd fetch / run   (32V install)
+    vax/extract.py      -> prebsd fetch / run   (extract root from tape)
+    vax/vaxdrive.py     -> prebsd run           (VAX console driver)
+
+fetch the VAX tapes too:
+
+    - add the 32V tape (32v-tape) and disk images (32v-rp06.disk,
+      32v-root.disk) to images.tsv, so `prebsd fetch` gets them
+    - no separate fetcher in vax/ - one fetcher covers PDP-11 and VAX
+    - the VAX tape and disk images live in images/ with everything else,
+      not a vax-only directory
