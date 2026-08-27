@@ -1,7 +1,6 @@
 # prebsd - fetch and run Research Unix V4-V7 and 32V on SIMH
 
-Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11`
-simulator for V4-V7, `vax780` for 32V), driving the console over telnet and
+Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11` and `vax780` simulators), driving the console over telnet and
 dropping you at (or running a command in) the single-user shell.  Started as
 part of the pdp11-toolchain project, to run the *real* V7 compiler/assembler/
 linker against the ported ones.
@@ -16,7 +15,9 @@ linker against the ported ones.
 ```
 
 Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), `curl`, and Python 3.
-The console is served over telnet (`SET CONSOLE TELNET`), so nothing but the
+32V needs the VAX-11/780 simulator; the default Debian `simh` package builds
+only MicroVAX, so compile `vax780` from open-simh (see `vax/README.md`).  The
+console is served over telnet (`SET CONSOLE TELNET`), so nothing but the
 simulator binary and a raw TCP driver is needed.
 
 ## Layout
