@@ -49,7 +49,7 @@ rather than crawling the tree file-by-file.
 
 ## Notes
 
-* simh must not run while the disk is mounted by `kenfs`.  Stage files with
+* simh must not run while the disk is mounted by `filsys`.  Stage files with
   FUSE, unmount, then boot.
 * V7's KL11 console driver hard-codes `LCASE` (`usr/sys/dev/kl.c`), assuming a
   Model 33 Teletype - it uppercases output and lowercases typed input, so `cc
@@ -77,25 +77,25 @@ Where each image came from, who made it, and the page it was fetched from:
 The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) were built by this
 project from that tape and are distributed directly.
 
-## Mounting (kenfsmount)
+## Mounting (filsysmount)
 
-Mounting is done by [kenfs](https://github.com/moebiusV/kenfs), a FUSE driver
+Mounting is done by [filsys](https://github.com/moebiusV/filsys), a FUSE driver
 for V4-V7 and 32V filesystem images.  The RP06 images (V7 `v7-rp06.disk`, 32V
 `32v-rp06.disk`) share one partition layout: root at block 0, swap at 5000,
 `/usr` at 18392 (byte offset 9416704).
 
     # V7 (v7-rp06.disk)
-    kenfsmount -v 7  v7-rp06.disk mnt
-    kenfsmount -v 7  -o offset=9416704 v7-rp06.disk mnt/usr
+    filsysmount -v 7  v7-rp06.disk mnt
+    filsysmount -v 7  -o offset=9416704 v7-rp06.disk mnt/usr
 
     # 32V (32v-rp06.disk)
-    kenfsmount -v 32 32v-rp06.disk mnt
-    kenfsmount -v 32 -o offset=9416704 32v-rp06.disk mnt/usr
+    filsysmount -v 32 32v-rp06.disk mnt
+    filsysmount -v 32 -o offset=9416704 32v-rp06.disk mnt/usr
 
     # single-filesystem images
-    kenfsmount -v 4  v4-rk05.disk mnt        # V4 root
-    kenfsmount -v 5  v5-root.disk mnt        # V5 root
-    kenfsmount -v 6  v6-rk0 mnt              # V6 root
-    kenfsmount -v 32 32v-root.disk mnt       # 32V root only
+    filsysmount -v 4  v4-rk05.disk mnt        # V4 root
+    filsysmount -v 5  v5-root.disk mnt        # V5 root
+    filsysmount -v 6  v6-rk0 mnt              # V6 root
+    filsysmount -v 32 32v-root.disk mnt       # 32V root only
 
 Mount the root first, then nest the `/usr` mount on top.

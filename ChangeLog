@@ -7,6 +7,6 @@ The authoritative history is the git log.  Summary:
               provenance, mount commands and sha256 checksums; fetch skips or
               re-downloads by checksum and keeps mismatched files for
               investigation.
-  2026-08-26  Split the simh console driver out of kenfs into its own repo;
+  2026-08-26  Split the simh console driver out of filsys into its own repo;
               added fetch + images.json manifest + ini/ per-image configs +
               boot.py.

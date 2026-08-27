@@ -5,7 +5,7 @@ current scripts:
 
     prebsd fetch      download bootable images and tapes
     prebsd run        boot an image on simh and drive the console
-    prebsd mount      mount an image (wrap kenfsmount)
+    prebsd mount      mount an image (wrap filsysmount)
 
 Mapping from today's tooling:
 
