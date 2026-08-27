@@ -23,3 +23,8 @@ fetch the VAX tapes too:
     - no separate fetcher in vax/ - one fetcher covers PDP-11 and VAX
     - the VAX tape and disk images live in images/ with everything else,
       not a vax-only directory
+
+build a V7 disk from the Keith Bostic tape:
+
+    - install V7 from the Bostic tape onto a disk (like the 32V build) and
+      distribute the resulting disk directly, since it is built by this project
