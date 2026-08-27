@@ -9,9 +9,11 @@
 #   src         has the Unix source tree (/usr/src) on the image?  yes/no
 #
 # Bootable disk images only - no tape-only distribution/install images.
-# No prebuilt bootable disk ships with /usr/src; the source tree is distributed
-# separately (git mirrors, or a distribution tape).
-v7-pcollinson	V7, RP06 on a PDP-11/70 (pcollinson/unixv7-extras)	https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz	v7-pcollinson.ini	boot>:|hp(0,0)unix>mem =	yes	no
-v7-rl	V7, RL02 on a PDP-11/45 (SIMH uv7swre kit)	http://simh.trailing-edge.com/kits/uv7swre.zip	v7-rl.ini	boot>:|rl(0,0)rl2unix>mem =	yes	no
+# Every image here carries the source tree on its /usr partition, except
+# narukeh's pure-install image, which has none.
+v7-pcollinson	V7, RP06 on a PDP-11/70 (pcollinson/unixv7-extras)	https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz	v7-pcollinson.ini	boot>:|hp(0,0)unix>mem =	yes	yes
+v7-rl	V7, RL02 on a PDP-11/45 (SIMH uv7swre kit)	http://simh.trailing-edge.com/kits/uv7swre.zip	v7-rl.ini	boot>:|rl(0,0)rl2unix>mem =	yes	yes
 v7-narukeh	V7, RP06 pure install (narukeh/research_unix_v7)	https://github.com/narukeh/research_unix_v7/raw/main/rp06-0.disk.xz	v7-narukeh.ini	boot>:|hp(0,0)unix>mem =	yes	no
-v6-pcollinson	V6, three RK05 disks on a PDP-11/40 (pcollinson/unixv6-extras)	https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz	v6-pcollinson.ini	unix># 	yes	no
+v6-pcollinson	V6, three RK05 disks on a PDP-11/40 (pcollinson/unixv6-extras)	https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz	v6-pcollinson.ini	unix># 	yes	yes
+v5-tuhs	V5, RK05 root on a PDP-11/45 (TUHS Dennis_v5)	https://www.tuhs.org/Archive/Distributions/Research/Dennis_v5/v5root.gz	v5-tuhs.ini	unix>login:|root># 	yes	yes
+v4-aap	V4, RK05 on a PDP-11/45 (aap/squoze.net tape recovery)	http://squoze.net/UNIX/v4/disk.rk http://squoze.net/UNIX/v4/unix_v4.tap	v4-aap.ini	k>|unix>login:|root># 	yes	yes
