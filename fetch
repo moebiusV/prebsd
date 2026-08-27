@@ -10,6 +10,11 @@
 # v6-rk0, ...).  The .ini files attach those names as `../images/<name>` (simh
 # runs with cwd=ini/).  The downloaded files land in images/, which is
 # git-ignored.
+#
+# images/ holds the *pristine* fetched images.  Copy one to a working directory
+# before mounting read-write or editing, so the pristine copy stays clean for
+# the checksum to re-verify.  A file whose checksum no longer matches is kept
+# (renamed .modified / .bad) rather than deleted, so the change can be inspected.
 set -eu
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -75,8 +80,8 @@ dl() {  # dl URL FROM TO SHA256
             echo "  have $to (skip)"
             return
         fi
-        echo "  $to checksum differs - refetching"
-        rm -f "$DEST/$to"
+        echo "  $to checksum differs - keeping as $to.modified, refetching"
+        mv "$DEST/$to" "$DEST/$to.modified"
     fi
     base="${url##*/}"
     base="${base%%\?*}"
@@ -116,8 +121,8 @@ dl() {  # dl URL FROM TO SHA256
     if [ -n "$sha" ]; then
         got="$(sha256sum "$DEST/$to" 2>/dev/null | cut -d' ' -f1)"
         if [ "$got" != "$sha" ]; then
-            echo "  CHECKSUM MISMATCH: $to (got $got, want $sha)" >&2
-            rm -f "$DEST/$to"
+            echo "  CHECKSUM MISMATCH: $to - kept as $to.bad for investigation" >&2
+            mv "$DEST/$to" "$DEST/$to.bad"
             return 1
         fi
     fi

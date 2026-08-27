@@ -1,6 +1,13 @@
 prebsd NEWS
 ==========
 
+0.2 (2026-08-27)
+  * JSON manifest (images.json) with per-image provenance, mount commands and
+    sha256 checksums; fetch skips or re-downloads by checksum and keeps a
+    mismatched file for investigation.
+  * fetch supports V4 (aap tape recovery), V5 (TUHS Dennis_v5), and the 32V
+    and Keith Bostic V7 tapes.
+
 0.1 (2026-08-26)
   * Initial release: fetch V6/V7 disk images, per-image simh configs, and a
     headless console driver (boot.py).
