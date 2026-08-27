@@ -1,8 +1,8 @@
-runv7 ChangeLog
+prebsd ChangeLog
 ===============
 
 The authoritative history is the git log.  Summary:
 
-  2026-08-26  Split the simh console driver out of v7fuse into its own repo;
+  2026-08-26  Split the simh console driver out of kenfs into its own repo;
               added fetch + images.tsv manifest + ini/ per-image configs +
               boot.py.

@@ -1,5 +1,5 @@
 # downloaded disk images, tapes, compressed sources, and simh-created
-# device placeholders (git-ignored — refetched on demand)
+# device placeholders (git-ignored - refetched on demand)
 images/*
 
 # python

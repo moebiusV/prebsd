@@ -1,11 +1,11 @@
 #!/bin/sh
-# fetch — download a V6/V7 disk image (or the source tape) for runv7.
+# fetch - download a V6/V7 disk image (or the source tape) for prebsd.
 #
 #   ./fetch             list available images
 #   ./fetch <name>      download + unpack the named image into this directory
 #   ./fetch all         download everything
 #
-# The manifest is images.tsv; the download lands in images/ — the .ini files
+# The manifest is images.tsv; the download lands in images/ - the .ini files
 # reference them as `../images/...` (simh runs with cwd=ini/).  Large images
 # are git-ignored.
 set -eu
@@ -34,7 +34,7 @@ get_urls() {
 dl() {  # dl URL -> filename (last path component, de-URL-encoded)
     url="$1"
     out="${url##*/}"
-    # SourceForge "direct download" URLs end in /download — the real
+    # SourceForge "direct download" URLs end in /download - the real
     # filename is the path segment just before it.
     if [ "$out" = "download" ]; then
         out="${url%/download}"
@@ -64,7 +64,7 @@ fetch_one() {
 
 unpack() {
     n="$1"
-    # narukeh's .xz also decompresses to rp06-0.disk — the same name
+    # narukeh's .xz also decompresses to rp06-0.disk - the same name
     # pcollinson's .gz uses.  Rename it up front so the two V7 RP06 images
     # can't collide regardless of fetch order.
     if [ "$n" = "v7-narukeh" ] && [ -f "$DEST/rp06-0.disk.xz" ]; then

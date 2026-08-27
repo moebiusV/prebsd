@@ -1,4 +1,4 @@
-# runv7 image manifest.  Tab-separated.
+# prebsd image manifest.  Tab-separated.
 #
 #   name        short key for `./fetch <name>` and `./boot.py --ini ini/<name>.ini`
 #   description one line
@@ -8,7 +8,7 @@
 #   cc          has the C compiler (cc/c0/c1/as/ld)?  yes/no
 #   src         has the Unix source tree (/usr/src) on the image?  yes/no
 #
-# Bootable disk images only — no tape-only distribution/install images.
+# Bootable disk images only - no tape-only distribution/install images.
 # No prebuilt bootable disk ships with /usr/src; the source tree is distributed
 # separately (git mirrors, or a distribution tape).
 v7-pcollinson	V7, RP06 on a PDP-11/70 (pcollinson/unixv7-extras)	https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz	v7-pcollinson.ini	boot>:|hp(0,0)unix>mem =	yes	no

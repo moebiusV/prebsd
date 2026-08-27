@@ -2,7 +2,7 @@
 """Boot a V6/V7 disk image headlessly on simh (SET CONSOLE TELNET).
 
 The disk is described by a simh .ini (device, CPU, memory, boot command) and a
-boot *sequence* — the console input needed after the .ini's `boot` line runs.
+boot *sequence* - the console input needed after the .ini's `boot` line runs.
 Usage:
 
     ./boot.py --ini ini/v7-pcollinson.ini            # boot and drop at the shell
@@ -87,7 +87,7 @@ def load_manifest():
     """Return images.tsv as a list of dicts, one per image.
 
     Columns (tab-separated): name, description, urls, ini, boot, cc, src.
-    The `boot` value is kept verbatim (a trailing space can be meaningful —
+    The `boot` value is kept verbatim (a trailing space can be meaningful -
     `unix># ` = expect the "# " prompt, not just "#").
     """
     tsv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images.tsv')
@@ -230,7 +230,7 @@ def main():
 
     # V7's KL11 console driver hard-codes LCASE in t_flags at open time
     # (usr/sys/dev/kl.c: tp->t_flags = EVENP|LCASE|...), on the assumption
-    # that the console is a Model 33 Teletype — which could only print
+    # that the console is a Model 33 Teletype - which could only print
     # UPPERCASE.  Our telnet console is a full mixed-case terminal, so once
     # we reach the shell, clear the flag: output then keeps its case, and
     # input stops lowercasing typed uppercase (the -S -> -s trap).  All the

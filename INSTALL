@@ -1,7 +1,7 @@
-runv7 — INSTALL
+prebsd - INSTALL
 ===============
 
-runv7 is a set of scripts; there is nothing to compile.
+prebsd is a set of scripts; there is nothing to compile.
 
 Requirements:
   * simh (`pdp11` on the PATH)
