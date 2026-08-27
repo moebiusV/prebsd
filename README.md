@@ -56,8 +56,13 @@ compiler, and pull the source tree off the tape or a git mirror.
 
 ## Sources
 
-* <https://github.com/pcollinson/unixv7-extras> (V7 RP06 image)
-* <https://github.com/pcollinson/unixv6-extras> (V6 RK05 images)
-* <http://simh.trailing-edge.com/kits/uv7swre.zip> (V7 RL02 image)
-* <https://github.com/narukeh/research_unix_v7> (V7 RP06 pure install)
-* <https://gunkies.org/wiki/Installing_v7_on_SIMH> (Keith Bostic V7 tape install)
+Where each image came from, who made it, and the page it was fetched from:
+
+| image | originator | download link | original page |
+|-------|-----------|---------------|---------------|
+| V6 (RK05) | Peter Collinson | <https://github.com/pcollinson/unixv6-extras> (`simh/rk0.gz`, `rk1.gz`, `rk2.gz`) | <https://github.com/pcollinson/unixv6-extras> |
+| V7 (RP06) | Peter Collinson | <https://github.com/pcollinson/unixv7-extras> (`bootstrap/rp06-0.disk.gz`) | <https://github.com/pcollinson/unixv7-extras> |
+| V7 (RL02) | Bob Supnik | <http://simh.trailing-edge.com/kits/uv7swre.zip> | <http://simh.trailing-edge.com/> |
+| V7 (pure install) | narukeh | <https://github.com/narukeh/research_unix_v7> (`rp06-0.disk.xz`) | <https://github.com/narukeh/research_unix_v7> |
+| V7 (tape) | Keith Bostic / gunkies | gunkies install guide | <https://gunkies.org/wiki/Installing_v7_on_SIMH> |
+| 32V (VAX) | TUHS / Caldera | 32V distribution tape | <https://www.tuhs.org/Archive/> |

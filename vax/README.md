@@ -18,13 +18,13 @@ Put `vax780` on your PATH, or set `VAX780=/path/to/vax780`.
 
 Three files, all redistributable under the Caldera Ancient UNIX License:
 
-    rp06.disk       full 340671-block RP06 image (root + swap + /usr)
-    32v.tape        the 32V install tape (SIMH tape format)
-    root32v.disk    the extracted root filesystem (9600 blocks)
+    32v-rp06.disk       full 340671-block RP06 image (root + swap + /usr)
+    32v-tape        the 32V install tape (SIMH tape format)
+    32v-root.disk    the extracted root filesystem (9600 blocks)
 
 ## Scripts
 
-    extract.py      pull root32v.disk (tape file 1) out of 32v.tape
+    extract.py      pull 32v-root.disk (tape file 1) out of 32v-tape
     tdcopy.py       boot tboot.ini, run tdcopy, answer its questions
     install32v.py   boot dboot.ini, mkfs /usr, tar the tape into /usr
     vaxdrive.py     reusable VAX console driver (wait_for / send / poll)

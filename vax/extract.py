@@ -23,5 +23,5 @@ if len(files) >= 2:
     root = files[1]
     blocks = b''.join(r[1] for r in root)
     # each 10240-byte record is 20 x 512-byte disk blocks; total should be 9600 blocks
-    open('root32v.disk','wb').write(blocks)
+    open('32v-root.disk','wb').write(blocks)
     print("wrote root32v.disk: %d bytes = %d blocks" % (len(blocks), len(blocks)//512))
