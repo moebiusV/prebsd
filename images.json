@@ -9,8 +9,16 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "http://squoze.net/UNIX/v4/disk.rk", "to": "v4-rk05.disk" },
-        { "url": "http://squoze.net/UNIX/v4/unix_v4.tap", "to": "v4-tape" }
+        {
+          "url": "http://squoze.net/UNIX/v4/disk.rk",
+          "to": "v4-rk05.disk",
+          "sha256": "517ab53bb205039a31cd80d60c0c919a05ce12ee9c69584377c518889543c8b2"
+        },
+        {
+          "url": "http://squoze.net/UNIX/v4/unix_v4.tap",
+          "to": "v4-tape",
+          "sha256": "ec0a5437332171121a707f730a10e4eedaaa975ec2bb43cc617d7c3ebbfb70f2"
+        }
       ],
       "mount": [
         "kenfsmount -v 4 v4-rk05.disk mnt"
@@ -25,7 +33,11 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "https://www.tuhs.org/Archive/Distributions/Research/Dennis_v5/v5root.gz", "to": "v5-root.disk" }
+        {
+          "url": "https://www.tuhs.org/Archive/Distributions/Research/Dennis_v5/v5root.gz",
+          "to": "v5-root.disk",
+          "sha256": "4761de4dce7e3cc2fd25b66490047d42fd00077a471b1f80233efe47357ff1eb"
+        }
       ],
       "mount": [
         "kenfsmount -v 5 v5-root.disk mnt"
@@ -40,9 +52,21 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz", "to": "v6-rk0" },
-        { "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz", "to": "v6-rk1" },
-        { "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz", "to": "v6-rk2" }
+        {
+          "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz",
+          "to": "v6-rk0",
+          "sha256": "dd5136f73c6cca931b72fc7fd67ca8ecb07a96d6a61ed8c5817f8e81bf46d063"
+        },
+        {
+          "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz",
+          "to": "v6-rk1",
+          "sha256": "2656417c59ef4d7d18868dadc1259023ead09324c775fa0d2147cadced32f8eb"
+        },
+        {
+          "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz",
+          "to": "v6-rk2",
+          "sha256": "d3d13164022a04bb53e92259ea363ef724c7e04351e2d3351f99ab874e26b8ec"
+        }
       ],
       "mount": [
         "kenfsmount -v 6 v6-rk0 mnt"
@@ -57,7 +81,11 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz", "to": "v7-rp06.disk" }
+        {
+          "url": "https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz",
+          "to": "v7-rp06.disk",
+          "sha256": "100e8f0f74e6532433a85eae71946d7f68620ba1328d33ebf8539e50a2a591a9"
+        }
       ],
       "mount": [
         "kenfsmount -v 7 v7-rp06.disk mnt",
@@ -73,7 +101,12 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "http://simh.trailing-edge.com/kits/uv7swre.zip", "from": "unix_v7_rl.dsk", "to": "v7-rl02.disk" }
+        {
+          "url": "http://simh.trailing-edge.com/kits/uv7swre.zip",
+          "from": "unix_v7_rl.dsk",
+          "to": "v7-rl02.disk",
+          "sha256": "e2838dcc9f14bb056d396cccea9e830fd8b8046c0f75b9fab21735b823cc848a"
+        }
       ],
       "mount": [
         "kenfsmount -v 7 v7-rl02.disk mnt"
@@ -88,7 +121,11 @@
       "cc": true,
       "src": false,
       "files": [
-        { "url": "https://github.com/narukeh/research_unix_v7/raw/main/rp06-0.disk.xz", "to": "v7-narukeh-rp06.disk" }
+        {
+          "url": "https://github.com/narukeh/research_unix_v7/raw/main/rp06-0.disk.xz",
+          "to": "v7-narukeh-rp06.disk",
+          "sha256": "27c3bc041692c805e006588ce57c7dc32970f1796b8df44482aa367faa86be76"
+        }
       ],
       "mount": [
         "kenfsmount -v 7 v7-narukeh-rp06.disk mnt",
@@ -104,7 +141,11 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "https://sourceforge.net/projects/bsd42/files/Install%20tapes/Research%20Unix/Unix-v7-Keith-Bostic.tap.bz2/download", "to": "v7-bostic.tap" }
+        {
+          "url": "https://sourceforge.net/projects/bsd42/files/Install%20tapes/Research%20Unix/Unix-v7-Keith-Bostic.tap.bz2/download",
+          "to": "v7-bostic.tap",
+          "sha256": "41ac8626108af0a7b42d028783c69c3658a212f3b617793702e319cb7a3afcb8"
+        }
       ],
       "mount": []
     },
@@ -117,7 +158,11 @@
       "cc": true,
       "src": true,
       "files": [
-        { "url": "http://sourceforge.net/projects/bsd42/files/Install%20tapes/32v/32v.tap.bz2/download", "to": "32v-tape" }
+        {
+          "url": "http://sourceforge.net/projects/bsd42/files/Install%20tapes/32v/32v.tap.bz2/download",
+          "to": "32v-tape",
+          "sha256": "5f51ac7bc8f8e3645435423b15b995611b385d6883ed0dad49c271a912742a05"
+        }
       ],
       "mount": [
         "kenfsmount -v 32 32v-rp06.disk mnt",

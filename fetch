@@ -34,7 +34,7 @@ for img in d['images']:
 PY
 }
 
-jfiles() {  # jfiles NAME -> "url<TAB>from<TAB>to" lines
+jfiles() {  # jfiles NAME -> "url<TAB>from<TAB>to<TAB>sha256" lines
     python3 - "$1" <<'PY'
 import json, sys
 name = sys.argv[1]
@@ -42,7 +42,7 @@ d = json.load(open('images.json'))
 for img in d['images']:
     if img['name'] == name:
         for f in img.get('files', []):
-            print(f"{f['url']}\t{f.get('from', '')}\t{f['to']}")
+            print(f"{f['url']}\t{f.get('from', '')}\t{f['to']}\t{f.get('sha256', '')}")
         break
 PY
 }
@@ -68,11 +68,15 @@ if [ $# -eq 0 ] || [ -z "$name" ]; then
     exit 0
 fi
 
-dl() {  # dl URL FROM TO
-    url="$1"; from="$2"; to="$3"
+dl() {  # dl URL FROM TO SHA256
+    url="$1"; from="$2"; to="$3"; sha="$4"
     if [ -f "$DEST/$to" ]; then
-        echo "  have $to (skip)"
-        return
+        if [ -z "$sha" ] || [ "$(sha256sum "$DEST/$to" 2>/dev/null | cut -d' ' -f1)" = "$sha" ]; then
+            echo "  have $to (skip)"
+            return
+        fi
+        echo "  $to checksum differs - refetching"
+        rm -f "$DEST/$to"
     fi
     base="${url##*/}"
     base="${base%%\?*}"
@@ -109,6 +113,15 @@ dl() {  # dl URL FROM TO
             mv "$tmp" "$DEST/$to"
             ;;
     esac
+    if [ -n "$sha" ]; then
+        got="$(sha256sum "$DEST/$to" 2>/dev/null | cut -d' ' -f1)"
+        if [ "$got" != "$sha" ]; then
+            echo "  CHECKSUM MISMATCH: $to (got $got, want $sha)" >&2
+            rm -f "$DEST/$to"
+            return 1
+        fi
+    fi
+    echo "  ok $to"
 }
 
 fetch_one() {
@@ -116,9 +129,9 @@ fetch_one() {
     files="$(jfiles "$n")"
     [ -n "$files" ] || { echo "unknown image: $n"; echo; echo "available:"; jlist; exit 1; }
     echo "== $n =="
-    printf '%s\n' "$files" | while IFS="$(printf '\t')" read -r url from to; do
+    printf '%s\n' "$files" | while IFS="$(printf '\t')" read -r url from to sha; do
         [ -n "$url" ] || continue
-        dl "$url" "$from" "$to"
+        dl "$url" "$from" "$to" "$sha"
     done
 }
 
