@@ -76,6 +76,13 @@ dl() {  # dl URL FROM TO
     fi
     base="${url##*/}"
     base="${base%%\?*}"
+    # SourceForge direct-download URLs end in /download - the real filename
+    # is the path segment just before it.
+    if [ "$base" = "download" ]; then
+        base="${url%/download}"
+        base="${base##*/}"
+        base="${base%%\?*}"
+    fi
     echo "  fetch $base -> $to"
     tmp="$DEST/.fetch-$$"
     curl -L --retry 3 -o "$tmp" "$url"
@@ -86,6 +93,10 @@ dl() {  # dl URL FROM TO
             ;;
         *.xz)
             unxz -c "$tmp" > "$DEST/$to"
+            rm -f "$tmp"
+            ;;
+        *.bz2)
+            bunzip2 -c "$tmp" > "$DEST/$to"
             rm -f "$tmp"
             ;;
         *.zip)
@@ -120,4 +131,11 @@ else
 fi
 
 ini="$(jini "$name")"
-echo "done.  boot with: ./boot.py --ini ini/$ini"
+if [ -n "$ini" ]; then
+    case "$ini" in
+        */*) echo "done.  boot with: ./boot.py --ini $ini" ;;
+        *)   echo "done.  boot with: ./boot.py --ini ini/$ini" ;;
+    esac
+else
+    echo "done.  (install via the gunkies guide)"
+fi

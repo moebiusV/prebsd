@@ -79,8 +79,10 @@ project from that tape and are distributed directly.
 
 ## Mounting (kenfsmount)
 
-The RP06 images (V7 `v7-rp06.disk`, 32V `32v-rp06.disk`) share one partition
-layout: root at block 0, swap at 5000, `/usr` at 18392 (byte offset 9416704).
+Mounting is done by [kenfs](https://github.com/moebiusV/kenfs), a FUSE driver
+for V4-V7 and 32V filesystem images.  The RP06 images (V7 `v7-rp06.disk`, 32V
+`32v-rp06.disk`) share one partition layout: root at block 0, swap at 5000,
+`/usr` at 18392 (byte offset 9416704).
 
     # V7 (v7-rp06.disk)
     kenfsmount -v 7  v7-rp06.disk mnt

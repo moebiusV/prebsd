@@ -2,7 +2,8 @@
   "images": [
     {
       "name": "v4-aap",
-      "description": "V4, RK05 on a PDP-11/45 (aap/squoze.net tape recovery)",
+      "description": "V4, RK05, PDP-11/45",
+      "provenance": "Angelo Papenhoff, full source",
       "ini": "v4-aap.ini",
       "boot": "k>|unix>login:|root># ",
       "cc": true,
@@ -17,7 +18,8 @@
     },
     {
       "name": "v5-tuhs",
-      "description": "V5, RK05 on a PDP-11/45 (TUHS Dennis_v5)",
+      "description": "V5, RK05, PDP-11/45",
+      "provenance": "Dennis Ritchie, root+usr source",
       "ini": "v5-tuhs.ini",
       "boot": "unix>login:|root># ",
       "cc": true,
@@ -31,7 +33,8 @@
     },
     {
       "name": "v6-pcollinson",
-      "description": "V6, three RK05 disks on a PDP-11/40 (pcollinson/unixv6-extras)",
+      "description": "V6, three RK05, PDP-11/40",
+      "provenance": "Peter Collinson, 3 disks + source",
       "ini": "v6-pcollinson.ini",
       "boot": "unix># ",
       "cc": true,
@@ -47,7 +50,8 @@
     },
     {
       "name": "v7-pcollinson",
-      "description": "V7, RP06 on a PDP-11/70 (pcollinson/unixv7-extras)",
+      "description": "V7, RP06, PDP-11/70",
+      "provenance": "Peter Collinson, root+usr source",
       "ini": "v7-pcollinson.ini",
       "boot": "boot>:|hp(0,0)unix>mem =",
       "cc": true,
@@ -62,7 +66,8 @@
     },
     {
       "name": "v7-rl",
-      "description": "V7, RL02 on a PDP-11/45 (SIMH uv7swre kit)",
+      "description": "V7, RL02, PDP-11/45",
+      "provenance": "Bob Supnik, RL02 + source",
       "ini": "v7-rl.ini",
       "boot": "boot>:|rl(0,0)rl2unix>mem =",
       "cc": true,
@@ -76,7 +81,8 @@
     },
     {
       "name": "v7-narukeh",
-      "description": "V7, RP06 pure install (narukeh/research_unix_v7)",
+      "description": "V7, RP06, PDP-11/70",
+      "provenance": "narukeh, root only",
       "ini": "v7-narukeh.ini",
       "boot": "boot>:|hp(0,0)unix>mem =",
       "cc": true,
@@ -87,6 +93,36 @@
       "mount": [
         "kenfsmount -v 7 v7-narukeh-rp06.disk mnt",
         "kenfsmount -v 7 -o offset=9416704 v7-narukeh-rp06.disk mnt/usr"
+      ]
+    },
+    {
+      "name": "v7-keithbostic",
+      "description": "V7 install tape, PDP-11",
+      "provenance": "Keith Bostic, install tape + source",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "https://sourceforge.net/projects/bsd42/files/Install%20tapes/Research%20Unix/Unix-v7-Keith-Bostic.tap.bz2/download", "to": "v7-bostic.tap" }
+      ],
+      "mount": []
+    },
+    {
+      "name": "32v",
+      "description": "32V, RP06, VAX-11/780",
+      "provenance": "TUHS / Caldera, root+usr source",
+      "ini": "vax/dboot.ini",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "http://sourceforge.net/projects/bsd42/files/Install%20tapes/32v/32v.tap.bz2/download", "to": "32v-tape" }
+      ],
+      "mount": [
+        "kenfsmount -v 32 32v-rp06.disk mnt",
+        "kenfsmount -v 32 -o offset=9416704 32v-rp06.disk mnt/usr",
+        "kenfsmount -v 32 32v-root.disk mnt"
       ]
     }
   ]
