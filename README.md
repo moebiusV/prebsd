@@ -1,9 +1,10 @@
-# prebsd - boot pre-BSD Research Unix on simh, headlessly
+# prebsd - fetch and run Research Unix V4-V7 and 32V on SIMH
 
-Fetches a V6 or V7 disk image, boots it under simh with the console driven over
-telnet, and drops you at (or runs a command in) the single-user shell.  Built for
-the Koitix toolchain project, to run the *real* V7 compiler/assembler/linker
-against the ported ones.
+Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11`
+simulator for V4-V7, `vax780` for 32V), driving the console over telnet and
+dropping you at (or running a command in) the single-user shell.  Built for the
+Koitix toolchain project, to run the *real* V7 compiler/assembler/linker against
+the ported ones.
 
 ```
 ./fetch                         # list images
@@ -14,9 +15,9 @@ against the ported ones.
 ./boot.py --ini ini/v7-pcollinson.ini       # or name the ini directly
 ```
 
-Requirements: `simh` (`pdp11` on the PATH), `curl`, and Python 3.  The console
-is served over telnet (`SET CONSOLE TELNET`), so nothing but the pdp11 binary and
-a raw TCP driver is needed.
+Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), `curl`, and Python 3.
+The console is served over telnet (`SET CONSOLE TELNET`), so nothing but the
+simulator binary and a raw TCP driver is needed.
 
 ## Layout
 
