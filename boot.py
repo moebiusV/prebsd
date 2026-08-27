@@ -21,6 +21,7 @@ this driver sends `stty -lcase` by default, restoring a full mixed-case console.
 This is the temporary Python driver; a C rewrite is planned.
 """
 import argparse
+import json
 import os
 import select
 import socket
@@ -84,35 +85,31 @@ def negotiate(sock):
 
 
 def load_manifest():
-    """Return images.tsv as a list of dicts, one per image.
+    """Return images.json as a list of dicts, one per image.
 
-    Columns (tab-separated): name, description, urls, ini, boot, cc, src.
-    The `boot` value is kept verbatim (a trailing space can be meaningful -
-    `unix># ` = expect the "# " prompt, not just "#").
+    Fields used: name, description, ini, boot.  The `boot` value is kept
+    verbatim (a trailing space can be meaningful - `unix># ` = expect the
+    "# " prompt, not just "#").
     """
-    tsv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images.tsv')
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images.json')
     rows = []
     try:
-        with open(tsv) as f:
-            for line in f:
-                if not line.strip() or line.lstrip().startswith('#'):
-                    continue
-                cols = line.rstrip('\n').split('\t')
-                if len(cols) < 5 or not cols[0].strip():
-                    continue
-                rows.append({
-                    'name': cols[0].strip(),
-                    'desc': cols[1].strip() if len(cols) > 1 else '',
-                    'ini': cols[3].strip() if len(cols) > 3 else '',
-                    'boot': cols[4] if len(cols) > 4 else '',
-                })
-    except OSError:
+        with open(path) as f:
+            data = json.load(f)
+        for img in data.get('images', []):
+            rows.append({
+                'name': img.get('name', ''),
+                'desc': img.get('description', ''),
+                'ini': img.get('ini', ''),
+                'boot': img.get('boot', ''),
+            })
+    except (OSError, ValueError):
         pass
     return rows
 
 
 def lookup_boot(ini):
-    """Return the boot sequence for `ini` from images.tsv, else None.
+    """Return the boot sequence for `ini` from images.json, else None.
 
     The manifest's `ini` column names the simh config and its `boot` column
     is that image's SEND>EXPECT sequence, so `--ini ini/v7-rl.ini` picks up
@@ -130,9 +127,9 @@ def main():
     ap.add_argument('--ini', default='headless.ini', help='simh config file')
     ap.add_argument('--boot', default=None,
                     help='console boot sequence SEND>EXPECT|SEND>EXPECT '
-                         '(default: looked up from images.tsv by --ini)')
+                         '(default: looked up from images.json by --ini)')
     ap.add_argument('--list', action='store_true',
-                    help='list bootable images from images.tsv and exit')
+                    help='list bootable images from images.json and exit')
     ap.add_argument('--img', type=int, default=None, metavar='N',
                     help='boot the Nth image from --list (1-based)')
     ap.add_argument('--port', type=int, default=10023, help='telnet port')
@@ -144,7 +141,7 @@ def main():
 
     images = load_manifest()
     if args.list:
-        print('bootable images (images.tsv):')
+        print('bootable images (images.json):')
         for i, row in enumerate(images, 1):
             boot = row['boot'].strip() if row['boot'] else '(manual install)'
             print('  %2d  %-16s %-44s %s' % (i, row['name'], row['desc'], boot))

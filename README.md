@@ -21,8 +21,8 @@ simulator binary and a raw TCP driver is needed.
 
 ## Layout
 
-  * `fetch`            download/unpack a disk image (see `images.tsv`)
-  * `images.tsv`       the manifest: image -> URL, ini, boot sequence, flags
+  * `fetch`            download/unpack a disk image (see `images.json`)
+  * `images.json`      the manifest: image -> files, ini, boot, mount commands
   * `ini/*.ini`        one simh config per image (device / CPU / memory / boot)
   * `boot.py`          the Python console driver (C rewrite planned)
   * `dist/`            the images, gzipped, `v4-`/`v5-`/`v6-`/`v7-`/`32v-` names

@@ -1,0 +1,93 @@
+{
+  "images": [
+    {
+      "name": "v4-aap",
+      "description": "V4, RK05 on a PDP-11/45 (aap/squoze.net tape recovery)",
+      "ini": "v4-aap.ini",
+      "boot": "k>|unix>login:|root># ",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "http://squoze.net/UNIX/v4/disk.rk", "to": "v4-rk05.disk" },
+        { "url": "http://squoze.net/UNIX/v4/unix_v4.tap", "to": "v4-tape" }
+      ],
+      "mount": [
+        "kenfsmount -v 4 v4-rk05.disk mnt"
+      ]
+    },
+    {
+      "name": "v5-tuhs",
+      "description": "V5, RK05 on a PDP-11/45 (TUHS Dennis_v5)",
+      "ini": "v5-tuhs.ini",
+      "boot": "unix>login:|root># ",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "https://www.tuhs.org/Archive/Distributions/Research/Dennis_v5/v5root.gz", "to": "v5-root.disk" }
+      ],
+      "mount": [
+        "kenfsmount -v 5 v5-root.disk mnt"
+      ]
+    },
+    {
+      "name": "v6-pcollinson",
+      "description": "V6, three RK05 disks on a PDP-11/40 (pcollinson/unixv6-extras)",
+      "ini": "v6-pcollinson.ini",
+      "boot": "unix># ",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz", "to": "v6-rk0" },
+        { "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz", "to": "v6-rk1" },
+        { "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz", "to": "v6-rk2" }
+      ],
+      "mount": [
+        "kenfsmount -v 6 v6-rk0 mnt"
+      ]
+    },
+    {
+      "name": "v7-pcollinson",
+      "description": "V7, RP06 on a PDP-11/70 (pcollinson/unixv7-extras)",
+      "ini": "v7-pcollinson.ini",
+      "boot": "boot>:|hp(0,0)unix>mem =",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz", "to": "v7-rp06.disk" }
+      ],
+      "mount": [
+        "kenfsmount -v 7 v7-rp06.disk mnt",
+        "kenfsmount -v 7 -o offset=9416704 v7-rp06.disk mnt/usr"
+      ]
+    },
+    {
+      "name": "v7-rl",
+      "description": "V7, RL02 on a PDP-11/45 (SIMH uv7swre kit)",
+      "ini": "v7-rl.ini",
+      "boot": "boot>:|rl(0,0)rl2unix>mem =",
+      "cc": true,
+      "src": true,
+      "files": [
+        { "url": "http://simh.trailing-edge.com/kits/uv7swre.zip", "from": "unix_v7_rl.dsk", "to": "v7-rl02.disk" }
+      ],
+      "mount": [
+        "kenfsmount -v 7 v7-rl02.disk mnt"
+      ]
+    },
+    {
+      "name": "v7-narukeh",
+      "description": "V7, RP06 pure install (narukeh/research_unix_v7)",
+      "ini": "v7-narukeh.ini",
+      "boot": "boot>:|hp(0,0)unix>mem =",
+      "cc": true,
+      "src": false,
+      "files": [
+        { "url": "https://github.com/narukeh/research_unix_v7/raw/main/rp06-0.disk.xz", "to": "v7-narukeh-rp06.disk" }
+      ],
+      "mount": [
+        "kenfsmount -v 7 v7-narukeh-rp06.disk mnt",
+        "kenfsmount -v 7 -o offset=9416704 v7-narukeh-rp06.disk mnt/usr"
+      ]
+    }
+  ]
+}

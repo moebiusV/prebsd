@@ -19,7 +19,7 @@ Mapping from today's tooling:
 fetch the VAX tapes too:
 
     - add the 32V tape (32v-tape) and disk images (32v-rp06.disk,
-      32v-root.disk) to images.tsv, so `prebsd fetch` gets them
+      32v-root.disk) to images.json, so `prebsd fetch` gets them
     - no separate fetcher in vax/ - one fetcher covers PDP-11 and VAX
     - the VAX tape and disk images live in images/ with everything else,
       not a vax-only directory

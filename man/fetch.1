@@ -8,7 +8,7 @@ fetch \- download a V6 or V7 disk image for prebsd
 .B fetch
 downloads and unpacks a Research Unix V6 or V7 disk image (or the V7 source
 tape) named in the
-.B images.tsv
+.B images.json
 manifest, into the current directory, so the per-image simh configs in
 .BR ini/
 can attach it.
@@ -18,7 +18,7 @@ With
 it fetches every image.
 .SH FILES
 .TP
-.B images.tsv
+.B images.json
 the manifest of images (name, URL, simh config, boot sequence, flags).
 .TP
 .BR ini/*.ini
