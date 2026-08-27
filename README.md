@@ -87,5 +87,4 @@ layout: root at block 0, swap at 5000, `/usr` at 18392 (byte offset 9416704).
     kenfsmount -v 32 32v-root.disk mnt       # 32V root only
     kenfsmount -v 6  rk0 mnt                 # V6 root only
 
-Mount the root first, then nest the `/usr` mount on top (`-o allow_other` +
-`user_allow_other`).
+Mount the root first, then nest the `/usr` mount on top.
