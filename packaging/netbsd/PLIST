@@ -1,0 +1,13 @@
+@comment $NetBSD$
+bin/prebsd-fetch
+lib/prebsd/fetch
+lib/prebsd/boot.py
+lib/prebsd/images.json
+lib/prebsd/ini/v4-aap.ini
+lib/prebsd/ini/v5-tuhs.ini
+lib/prebsd/ini/v6-pcollinson.ini
+lib/prebsd/ini/v7-narukeh.ini
+lib/prebsd/ini/v7-pcollinson.ini
+lib/prebsd/ini/v7-rl.ini
+man/man1/fetch.1
+man/man1/boot.1

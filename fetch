@@ -17,7 +17,7 @@
 # (renamed .modified / .bad) rather than deleted, so the change can be inspected.
 set -eu
 
-HERE="$(cd "$(dirname "$0")" && pwd)"
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 DEST="$HERE/images"
 cd "$HERE"
 

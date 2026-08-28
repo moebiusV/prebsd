@@ -1,0 +1,17 @@
+# Maintainer: maintainer <email>
+pkgname=prebsd
+pkgver=0.1
+pkgrel=0
+pkgdesc="Fetch and run Research Unix V4-V7 and 32V on SIMH"
+url="https://github.com/moebiusV/prebsd"
+arch="noarch"
+license="ISC"
+depends="python3 curl"
+source="https://github.com/moebiusV/prebsd/archive/refs/tags/v$pkgver.tar.gz"
+sha512sums="SKIP"
+
+package() {
+	cd "$pkgname-$pkgver"
+	./configure --prefix=/usr || return 1
+	make DESTDIR="$pkgdir" install || return 1
+}

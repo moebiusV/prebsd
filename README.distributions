@@ -1,0 +1,135 @@
+Packaging prebsd for Distributions
+==================================
+
+This file is for distribution packagers who want to add prebsd to their
+distro's package repository.  Template packaging files for several systems
+are provided under `packaging/`.  Each is roughly 90% complete — the packager
+fills in maintainer details, changelog, and distro-specific adjustments.
+
+What prebsd Is
+--------------
+
+prebsd fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the
+`pdp11` and `vax780` simulators), driving the console over telnet.  It ships
+two tools: `fetch` (download/unpack a disk image from the `images.json`
+manifest) and `boot.py` (the console driver).
+
+Dependencies
+------------
+
+Runtime only — prebsd is a set of scripts, nothing is compiled:
+  - python3 (boot.py)
+  - curl (fetch)
+  - simh with the `pdp11` simulator (V4-V7); 32V additionally needs `vax780`
+    (the default Debian `simh` builds only MicroVAX, so compile `vax780`)
+
+How the Build Works
+-------------------
+
+    ./configure && make && make install
+
+`configure` is shipped, so autoconf/automake are not needed to build.
+
+Install layout (default prefix `/usr/local`):
+
+    $(bindir)/prebsd-fetch     symlink to $(libdir)/prebsd/fetch
+    $(libdir)/prebsd/          fetch, boot.py, images.json, ini/
+    $(mandir)/man1/            fetch.1, boot.1
+
+License
+-------
+
+ISC (see COPYING).
+
+Per-Distribution Notes
+======================
+
+RPM (Fedora / RHEL / CentOS)
+----------------------------
+
+  Files:  packaging/rpm/prebsd.spec
+
+  Customize: URL/Source0, the %changelog entry.
+  Build:  rpmbuild -ba packaging/rpm/prebsd.spec
+  Submit: Fedora Package Review process / EPEL.
+
+Debian / Ubuntu
+---------------
+
+  Files:  packaging/debian/
+
+  Customize: debian/changelog, debian/control Maintainer, debian/copyright.
+  Build:  dpkg-buildpackage -us -uc
+  Submit: File an ITP against wnpp.
+
+Arch Linux
+----------
+
+  Files:  packaging/arch/PKGBUILD
+
+  Customize: Maintainer line, sha256sums (updpkgsums).
+  Build:  makepkg -si
+  Submit: AUR.
+
+Alpine Linux
+------------
+
+  Files:  packaging/alpine/APKBUILD
+
+  Customize: Maintainer line, sha512sums (abuild checksum).
+  Build:  abuild -r
+  Submit: MR against aports.git.
+
+FreeBSD
+-------
+
+  Files:  packaging/freebsd/
+
+  Customize: MAINTAINER email, distinfo (real SHA256/SIZE).
+  Build:  make -C packaging/freebsd install (in a ports tree)
+  Submit: FreeBSD bug / send-pr, category "ports".
+
+OpenBSD
+-------
+
+  Files:  packaging/openbsd/
+
+  Customize: MAINTAINER email, pkg/PLIST after a test install.
+  Build:  make -C packaging/openbsd install (in a ports tree)
+  Submit: diff to ports@openbsd.org.
+
+NetBSD
+------
+
+  Files:  packaging/netbsd/
+
+  Customize: MAINTAINER email, distinfo (make distinfo).
+  Build:  bmake install (in a pkgsrc tree)
+  Submit: diff to pkgsrc-wip / pkgsrc-changes.
+
+Gentoo
+------
+
+  Files:  packaging/gentoo/
+
+  Customize: metadata.xml maintainer, ebuild SRC_URI, KEYWORDS.
+  Build:  ebuild packaging/gentoo/prebsd-0.1.ebuild manifest && emerge
+  Submit: bug at bugs.gentoo.org (category "Ebuild") or the GURU overlay.
+
+NixOS
+-----
+
+  Files:  packaging/nixos/default.nix
+
+  Customize: fetchFromGitHub owner/hash, meta.maintainers.
+  Build:  nix-build -E 'with import <nixpkgs> {}; callPackage ./packaging/nixos/default.nix {}'
+  Submit: PR against nixpkgs.
+
+Slackware
+---------
+
+  Files:  packaging/slackware/
+
+  Customize: prebsd.SlackBuild copyright, prebsd.info MD5SUM/MAINTAINER, slack-desc URL.
+  Build:  source prebsd.info && sh prebsd.SlackBuild
+  Submit: SlackBuilds.org (SBo).

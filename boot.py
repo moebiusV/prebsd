@@ -91,7 +91,7 @@ def load_manifest():
     verbatim (a trailing space can be meaningful - `unix># ` = expect the
     "# " prompt, not just "#").
     """
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images.json')
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'images.json')
     rows = []
     try:
         with open(path) as f:

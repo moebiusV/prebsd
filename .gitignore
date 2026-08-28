@@ -5,3 +5,10 @@ images/*
 # python
 __pycache__/
 *.pyc
+
+# autotools build artifacts (not shipped; configure/Makefile.in are tracked)
+/Makefile
+config.log
+config.status
+autom4te.cache/
+aclocal.m4

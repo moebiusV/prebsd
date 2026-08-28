@@ -1,0 +1,15 @@
+Source: prebsd
+Section: otherosfs
+Priority: optional
+Maintainer: maintainer <email>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/moebiusV/prebsd
+
+Package: prebsd
+Architecture: all
+Depends: python3, curl, ${misc:Depends}
+Recommends: simh
+Description: fetch and run Research Unix V4-V7 and 32V on SIMH
+ Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the pdp11
+ and vax780 simulators), driving the console over telnet.
