@@ -9,7 +9,7 @@ Homepage: https://github.com/moebiusV/prebsd
 Package: prebsd
 Architecture: all
 Depends: python3, curl, ${misc:Depends}
-Suggests: simh, filsys, v7unix-toolchain
+Recommends: simh, filsys, v7unix-toolchain
 Description: fetch and run Research Unix V4-V7 and 32V on SIMH
  Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the pdp11
  and vax780 simulators), driving the console over telnet.
