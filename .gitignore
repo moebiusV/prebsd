@@ -6,8 +6,8 @@ images/*
 __pycache__/
 *.pyc
 
-# autotools build artifacts (not shipped; configure/Makefile.in are tracked)
-/Makefile
+# autotools build artifacts (junk from running ./configure)
+# configure, Makefile.in and Makefile are tracked (./configure && make works)
 config.log
 config.status
 autom4te.cache/
