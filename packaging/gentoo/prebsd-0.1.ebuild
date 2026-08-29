@@ -11,6 +11,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 RDEPEND="net-misc/curl"
+# recommended (optional): sys-fs/filsys, dev-util/v7unix-toolchain, app-emulation/simh
 
 src_configure() {
 	econf

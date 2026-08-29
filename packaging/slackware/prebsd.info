@@ -6,5 +6,6 @@ MD5SUM=""
 DOWNLOAD_x86_64=""
 MD5SUM_x86_64=""
 REQUIRES=""
+# recommended (optional): filsys v7unix-toolchain simh
 MAINTAINER="maintainer"
 EMAIL="maintainer@example.com"

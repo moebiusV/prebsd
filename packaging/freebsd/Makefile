@@ -16,4 +16,5 @@ GNU_CONFIGURE=	yes
 
 RUN_DEPENDS=	curl:ftp/curl
 
+# recommended (optional): sysutils/filsys, devel/v7unix-toolchain, emulators/simh
 .include <bsd.port.mk>

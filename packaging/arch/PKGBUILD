@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/moebiusV/prebsd"
 license=('ISC')
 depends=('python' 'curl')
-optdepends=('simh: to run the images')
+optdepends=('simh: to run the images' 'filsys: mount the images' 'v7unix-toolchain: cross-compile for the booted systems')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/moebiusV/prebsd/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 

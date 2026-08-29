@@ -12,6 +12,7 @@ stdenvNoCC.mkDerivation rec {
   };
 
   buildInputs = [ curl python3 ];
+  # recommended (optional): filsys, v7unix-toolchain, simh
 
   meta = with lib; {
     description = "Fetch and run Research Unix V4-V7 and 32V on SIMH";

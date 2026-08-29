@@ -12,4 +12,5 @@ NO_BUILD=	yes
 GNU_CONFIGURE=	yes
 USE_TOOLS+=	gmake
 
+# recommended (optional): ../../sysutils/filsys, ../../devel/v7unix-toolchain, ../../emulators/simh
 .include "../../mk/bsd.pkg.mk"

@@ -9,7 +9,9 @@ Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 Requires:       python3
 Requires:       curl
-Requires:       simh
+Suggests:       simh
+Suggests:       filsys
+Suggests:       v7unix-toolchain
 
 %description
 Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the pdp11

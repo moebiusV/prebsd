@@ -7,6 +7,7 @@ url="https://github.com/moebiusV/prebsd"
 arch="noarch"
 license="ISC"
 depends="python3 curl"
+# recommended (optional): simh filsys v7unix-toolchain
 source="https://github.com/moebiusV/prebsd/archive/refs/tags/v$pkgver.tar.gz"
 sha512sums="SKIP"
 

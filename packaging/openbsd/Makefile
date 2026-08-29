@@ -15,4 +15,5 @@ CONFIGURE_STYLE =	gnu
 
 RUN_DEPENDS =	net/curl
 
+# recommended (optional): sysutils/filsys, devel/v7unix-toolchain, emulators/simh
 .include <bsd.port.mk>
