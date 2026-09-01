@@ -55,7 +55,8 @@ rather than crawling the tree file-by-file.
 | `v7-narukeh`     | V7, RP06         | yes | no  | `boot` -> `hp(0,0)unix`          |
 | `v7-keithbostic` | V7 tape, install | yes | yes | install (gunkies guide)         |
 | `v7-bostic`      | V7, RP06, 11/70  | yes | yes | `boot` -> `hp(0,0)hptmunix`      |
-| `32v`            | 32V, RP06, VAX   | yes | yes | —                                |
+| `32v`            | 32V tape, install| yes | yes | install (`vax/install32v.py`)    |
+| `32v-disk`       | 32V, RP06, VAX   | yes | yes | —                                |
 
 ## Notes
 
@@ -86,9 +87,9 @@ Where each image came from, who made it, and the page it was fetched from:
 
 The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) and the V7 disk image
 (`v7-bostic.disk`, built by `pdp11/installv7.py` from the Keith Bostic tape)
-were built by this project and are distributed directly from `dist/`.  The V7
-disk is also listed in `images.json` as `v7-bostic` (`./fetch v7-bostic` grabs
-the gzip straight from `dist/`), so it boots without running the install.
+were built by this project and are distributed directly from `dist/`.  Both are
+also listed in `images.json` — `v7-bostic` and `32v-disk` (`./fetch` grabs the
+gzip straight from `dist/`) — so they boot without running the install.
 
 ## Mounting (mount.filsys)
 

@@ -192,6 +192,32 @@
         "mount.filsys -v 32 -o offset=9416704 32v-rp06.disk mnt/usr",
         "mount.filsys -v 32 32v-root.disk mnt"
       ]
+    },
+    {
+      "name": "32v-disk",
+      "description": "32V, RP06, VAX-11/780",
+      "provenance": "prebsd (built from the 32V tape)",
+      "ini": "vax/dboot.ini",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/32v-rp06.disk.gz",
+          "to": "32v-rp06.disk",
+          "sha256": "836416b08d7d6fa818236ed485179e9a80c2702ca8d7ba8d898f9ddee2393b46"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/32v-root.disk.gz",
+          "to": "32v-root.disk",
+          "sha256": "736c1a041576aaaacc3785bf833f21d01cbd396e5c2d90adf2d817a6f06d8772"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v 32 32v-rp06.disk mnt",
+        "mount.filsys -v 32 -o offset=9416704 32v-rp06.disk mnt/usr",
+        "mount.filsys -v 32 32v-root.disk mnt"
+      ]
     }
   ]
 }
