@@ -6,17 +6,17 @@ part of the pdp11-toolchain project, to run the *real* V7 compiler/assembler/
 linker against the ported ones.
 
 ```
-./fetch                         # list images
-./fetch v7-pcollinson           # download + unpack one
-./boot.py --list                # numbered list of bootable images
-./boot.py --img 1               # boot the 1st image from --list
-./boot.py --img 1 --cmd 'cc -S /tmp/x.c'   # boot + run a command
-./boot.py --ini ini/v7-pcollinson.ini       # or name the ini directly
+./prebsd ini/v7-pcollinson.ini   # boot an image (fetches the disk if missing)
+./prebsd v7-pcollinson.json      # same, by a single-image JSON manifest
+./fetch                          # list images (images.json)
+./fetch v7-pcollinson            # download + unpack one, no boot
 ```
 
-Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), `curl`, and Python 3.
-Fetched images (including the pre-built `v7-bostic` disk) boot straight from
-`images/` with no other tooling.  The one build step — turning a tape into a
+Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), and libcurl + json-c to
+build `prebsd` (the C console driver that supersedes the Python `boot.py`).  The
+tape->disk install scripts (`pdp11/installv7.py`, `vax/install32v.py`) still need
+Python 3.  Fetched images (including the pre-built `v7-bostic` disk) boot straight
+from `images/` with no other tooling.  The one build step — turning a tape into a
 bootable disk (`pdp11/installv7.py`) — is where
 [filsys](https://github.com/moebiusV/filsys) comes in: `restor` leaves the free
 list broken, and `fsck.filsys -s` rebuilds it.  filsys links libfuse3 to build
@@ -29,10 +29,11 @@ is needed.
 
 ## Layout
 
+  * `prebsd`           C driver: fetch (libcurl) + boot (telnet console)
   * `fetch`            download/unpack a disk image (see `images.json`)
   * `images.json`      the manifest: image -> files, ini, boot, mount commands
   * `ini/*.ini`        one simh config per image (device / CPU / memory / boot)
-  * `boot.py`          the Python console driver (C rewrite planned)
+  * `boot.py`          the old Python console driver (superseded by `prebsd`)
   * `dist/`            the images, gzipped, `v4-`/`v5-`/`v6-`/`v7-`/`32v-` names
   * `vax/`             32V (VAX) tape -> disk install scripts
 

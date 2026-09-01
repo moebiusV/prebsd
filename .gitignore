@@ -6,12 +6,14 @@ images/*
 __pycache__/
 *.pyc
 
+# prebsd build artifacts
+prebsd
+
 # install driver logs
 *.log
 
-# autotools build artifacts (junk from running ./configure)
-# configure, Makefile.in, install-sh and missing are tracked (no autotools needed)
-/Makefile
+# autotools build artifacts (junk from running ./configure).  The root Makefile
+# is the hand-written prebsd build, so it is tracked; only the extras are ignored.
 config.log
 config.status
 autom4te.cache/
