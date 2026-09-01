@@ -42,11 +42,10 @@ The two filesystems, matching the RP06 partition table in `usr/sys/dev/hp.c`:
 
 | fs    | size (blocks) | disk arg      | tape dump |
 |-------|---------------|---------------|-----------|
-| root  | 5000          | `hp(0,0)`     | `tm(0,5)` |
+| root  | 9614          | `hp(0,0)`     | `tm(0,5)` |
 | /usr  | 322278        | `hp(0,18392)` | `tm(0,6)` |
 
-The root filesystem is **5000 blocks**, matching the gunkies.org recipe (RP06
-partition 0 itself is 9614 blocks, but the dump fits in 5000).  `/usr` is
+The root filesystem is **9614 blocks** (partition 0, cylinders 0-22).  `/usr` is
 addressed by its block offset (`hp(0,18392)` = cylinder 44, partition 7).
 The standalone `mkfs` inode density reproduces the original `/usr` superblock
 exactly (`isize = 8189`).

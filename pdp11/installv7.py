@@ -13,9 +13,8 @@ v7-keithbostic).
 
 Two filesystems are built, matching the RP06 partition table in usr/sys/dev/hp.c:
 
-    root  hp(0,0)      5000 blocks   (matches the gunkies.org recipe; the 'a'
-                                      partition itself is 9614, but 5000 fits)
-    /usr  hp(0,18392)  322278 blocks (partition 3 = cylinder 44)
+    root  hp(0,0)      9614 blocks   (partition 0 = cylinders 0-22)
+    /usr  hp(0,18392)  322278 blocks (partition 7 = cylinder 44)
 
 The console dialogue, from the V7 "Setting Up Unix" paper (usr/doc/setup):
 
@@ -49,7 +48,7 @@ RP06_BLOCKS = 340672
 
 # (name, filesystem size in blocks, disk "hp(unit,offset)" spec, tape dump file #)
 FILESYSTEMS = [
-    ('root', 5000, 'hp(0,0)', 5),
+    ('root', 9614, 'hp(0,0)', 5),
     ('/usr', 322278, 'hp(0,18392)', 6),
 ]
 
