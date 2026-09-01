@@ -58,8 +58,9 @@ Mount with the `filsys` tools:
 
 ## Free list repair after restore
 
-`restor` does not rebuild the free list: it leaves `s_tfree` intact, but the
-chained free-block dump blocks are gone, so the disk can't allocate new blocks.
+`restor` does not rebuild the free list — the `dump` tape doesn't carry it (only
+inodes and data blocks) — so `s_tfree` is left intact but the chained free-block
+dump blocks are gone, and the disk can't allocate new blocks.
 The V7 fix is `icheck -s` (the `restor(1m)` page says it "must be done"), but
 `icheck`/`dcheck` aren't loadable from the tape — only `mkfs` and `restor` are —
 and they must run on a dismounted filesystem.  On the root, which can't be
@@ -74,7 +75,8 @@ doesn't write back its stale superblock.
 
 It covers the V7 repair toolkit: `icheck` (blocks/inodes), `dcheck` (link
 counts), `ncheck` (inode -> pathname, `-n ino`), `clri` (clear an inode,
-`-c ino`); `-s` is `icheck -s`, `-r` is `salv -a`.
+`-c ino`); `-s` is `icheck -s`, `-r` is `salv -a`.  The `dump`/`restor` tape
+format and the free-list repair are folded into the `filsys(5)` manpage.
 
 ## Booting the installed disk
 
