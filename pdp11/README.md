@@ -1,9 +1,9 @@
 # V7 (Keith Bostic tape) install
 
-Builds a bootable Seventh Edition Unix root filesystem on a blank RP06 disk
-image from the Keith Bostic distribution tape (`v7-bostic.tap`), driven
-headlessly over the simh pdp11 telnet console.  This mirrors the 32V VAX
-install in `../vax/`.
+Builds a complete bootable Seventh Edition Unix system (root **and** `/usr`)
+on a blank RP06 disk image from the Keith Bostic distribution tape
+(`v7-bostic.tap`), driven headlessly over the simh pdp11 telnet console.  This
+mirrors the 32V VAX install in `../vax/`.
 
 ## The tape
 
@@ -24,24 +24,38 @@ skips):
 ## Install
 
     ../fetch v7-keithbostic     # downloads v7-bostic.tap into images/
-    ./installv7.py              # mkfs + restor + boot block -> images/v7-bostic.disk
+    ./installv7.py              # mkfs + restor (root + /usr) + boot block
 
-The dialogue, from the V7 "Setting Up Unix" paper (`usr/doc/setup`):
+The dialogue, from the V7 "Setting Up Unix" paper (`usr/doc/setup`), is run
+once per filesystem (`tm` is the TU10 tape, `hp` the RP04/5/6 disk):
 
     : tm(0,3)                     run mkfs
-    file sys size: 9614           (the full RP06 root partition)
-    file system: hp(0,0)
+    file sys size: <size>
+    file system: <dev>
     : tm(0,4)                     run restor
-    Tape? tm(0,5)
-    Disk? hp(0,0)
+    Tape? tm(0,5|6)
+    Disk? <dev>
     Last chance before scribbling on disk.   (return)
     End of tape
 
-`tm` is the TU10 tape, `hp` the RP04/5/6 disk.  The root filesystem must be
-**9614 blocks** (the RP06 `a` partition) — the gunkies.org recipe's 5000 blocks
-is too small and `restor` dies with `Out of space`.
+The two filesystems, matching the RP06 partition table in `usr/sys/dev/hp.c`:
+
+| fs    | size (blocks) | disk arg      | tape dump |
+|-------|---------------|---------------|-----------|
+| root  | 9614          | `hp(0,0)`     | `tm(0,5)` |
+| /usr  | 322278        | `hp(0,18392)` | `tm(0,6)` |
+
+The root filesystem must be **9614 blocks** (the full RP06 `a` partition) — the
+gunkies.org recipe's 5000 blocks is too small and `restor` dies with `Out of
+space`.  `/usr` is addressed by its block offset (`hp(0,18392)` = cylinder 44,
+the `c` partition).  The standalone `mkfs` inode density reproduces the
+original `/usr` superblock exactly (`isize = 8189`).
 
 After the restore, `installv7.py` writes the `hpuboot` boot block to block 0.
+Mount with the `filsys` tools:
+
+    filsysmount -v 7 v7-bostic.disk mnt
+    filsysmount -v 7 -o offset=9416704 v7-bostic.disk mnt/usr
 
 ## Booting the installed disk
 

@@ -1,32 +1,37 @@
 #!/usr/bin/env python3
-"""Install V7 onto a blank RP06 disk from the Keith Bostic distribution tape.
+"""Install V7 (root + /usr) onto a blank RP06 disk from the Keith Bostic tape.
 
 Drives the simh pdp11 simulator headlessly over its telnet console: boot the
-tape, run the standalone mkfs to lay out the root filesystem, then restor the
-root dump.  Afterwards it writes the hpuboot boot block to block 0 so the disk
-boots on its own.
+tape, then for each filesystem run the standalone mkfs and restor.  Afterwards
+it writes the hpuboot boot block to block 0 so the disk boots on its own.
 
-Usage: ./installv7.py [fs-size]
+Usage: ./installv7.py
 
 Run from this directory.  It creates images/v7-bostic.disk (a blank 340672-block
 RP06) if missing, and needs images/v7-bostic.tap (fetch it with ../fetch
-v7-keithbostic).  The root filesystem defaults to 9614 blocks — the full size of
-the RP06 'a' (root) partition — which the Bostic root dump requires; 5000 blocks
-(the gunkies recipe) is too small and restor ends with "Out of space".
+v7-keithbostic).
+
+Two filesystems are built, matching the RP06 partition table in usr/sys/dev/hp.c:
+
+    root  hp(0,0)      9614 blocks   (the 'a' partition; the Bostic root dump
+                                       needs 9614 — 5000 dies with "Out of space")
+    /usr  hp(0,18392)  322278 blocks (partition 3 = cylinder 44)
 
 The console dialogue, from the V7 "Setting Up Unix" paper (usr/doc/setup):
 
     : tm(0,3)                      run mkfs
-    file sys size: <fs-size>
-    file system: hp(0,0)
+    file sys size: <size>
+    file system: <dev>
     : tm(0,4)                      run restor
-    Tape? tm(0,5)
-    Disk? hp(0,0)
+    Tape? tm(0,5)                  (root dump)   or tm(0,6) for the /usr dump
+    Disk? <dev>
     Last chance before scribbling on disk.   (return)
     End of tape
 
-`tm` is the TU10 tape (the Bostic tape), `hp` the RP04/5/6 disk.  The tape
-offsets count tape files: 3 = mkfs, 4 = restor, 5 = the root dump.
+`tm` is the TU10 tape, `hp` the RP04/5/6 disk; the `(0,offset)` disk argument is
+a block offset, so `hp(0,18392)` addresses the /usr partition (cylinder 44).
+The tape offsets count tape files: 3 = mkfs, 4 = restor, 5 = root dump, 6 = /usr
+dump.
 """
 import os
 import socket
@@ -41,7 +46,12 @@ DISK = os.path.join(IMAGES, 'v7-bostic.disk')
 TAPE = os.path.join(IMAGES, 'v7-bostic.tap')
 PORT = 10025
 RP06_BLOCKS = 340672
-ROOT_SIZE = int(sys.argv[1]) if len(sys.argv) > 1 else 9614
+
+# (name, filesystem size in blocks, disk "hp(unit,offset)" spec, tape dump file #)
+FILESYSTEMS = [
+    ('root', 9614, 'hp(0,0)', 5),
+    ('/usr', 322278, 'hp(0,18392)', 6),
+]
 
 
 def negotiate(sock):
@@ -135,36 +145,44 @@ def main():
         log.write('\n=== %s ===\n%s\n' % (tag, text()[-1200:]))
         log.flush()
 
+    def fail(msg):
+        print('[driver] %s' % msg)
+        snap('fail')
+        print(text()[-1200:])
+        proc.kill()
+        return 1
+
     poll(3.0)
     snap('boot')
 
-    # mkfs: lay out the root filesystem on hp(0,0).
-    send('tm(0,3)')
-    if not wait_for('file sys size:'):
-        print('[driver] mkfs never prompted'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    send(str(ROOT_SIZE))
-    if not wait_for('file system:'):
-        print('[driver] mkfs never asked for the device'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    send('hp(0,0)')
-    if not wait_for('Exit called'):
-        print('[driver] mkfs did not finish'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    snap('mkfs')
+    for name, size, dev, dump in FILESYSTEMS:
+        # mkfs
+        send('tm(0,3)')
+        if not wait_for('file sys size:'):
+            return fail('%s mkfs never prompted' % name)
+        send(str(size))
+        if not wait_for('file system:'):
+            return fail('%s mkfs never asked for the device' % name)
+        send(dev)
+        if not wait_for('Exit called'):
+            return fail('%s mkfs did not finish' % name)
+        snap('mkfs-' + name)
 
-    # restor: pull the root dump off the tape onto hp(0,0).
-    send('tm(0,4)')
-    if not wait_for('Tape?'):
-        print('[driver] restor never prompted for the tape'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    send('tm(0,5)')
-    if not wait_for('Disk?'):
-        print('[driver] restor never prompted for the disk'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    send('hp(0,0)')
-    if not wait_for('Last chance before scribbling on disk.'):
-        print('[driver] restor never warned'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    send('')  # bare return past the "Last chance" prompt
-    print('[driver] restoring root dump (this takes a couple of minutes)...')
-    if not wait_for('End of tape', timeout=600):
-        print('[driver] restor did not reach end of tape'); snap('fail'); print(text()[-1200:]); proc.kill(); return 1
-    snap('restor')
+        # restor
+        send('tm(0,4)')
+        if not wait_for('Tape?'):
+            return fail('%s restor never prompted for the tape' % name)
+        send('tm(0,%d)' % dump)
+        if not wait_for('Disk?'):
+            return fail('%s restor never prompted for the disk' % name)
+        send(dev)
+        if not wait_for('Last chance before scribbling on disk.'):
+            return fail('%s restor never warned' % name)
+        send('')  # bare return past the "Last chance" prompt
+        print('[driver] restoring %s dump (up to 10 min)...' % name)
+        if not wait_for('End of tape', timeout=900):
+            return fail('%s restor did not reach end of tape' % name)
+        snap('restor-' + name)
 
     sock.close()
     proc.terminate()

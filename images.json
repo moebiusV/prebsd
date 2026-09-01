@@ -148,7 +148,8 @@
         }
       ],
       "mount": [
-        "filsysmount -v 7 v7-bostic.disk mnt"
+        "filsysmount -v 7 v7-bostic.disk mnt",
+        "filsysmount -v 7 -o offset=9416704 v7-bostic.disk mnt/usr"
       ]
     },
     {
