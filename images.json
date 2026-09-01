@@ -134,10 +134,10 @@
     },
     {
       "name": "v7-keithbostic",
-      "description": "V7 install tape, PDP-11",
+      "description": "V7 install tape + installed RP06 disk, PDP-11",
       "provenance": "Keith Bostic, install tape + source",
-      "ini": "",
-      "boot": "",
+      "ini": "v7-keithbostic.ini",
+      "boot": "boot>:|hp(0,0)hptmunix>mem =",
       "cc": true,
       "src": true,
       "files": [
@@ -147,7 +147,9 @@
           "sha256": "41ac8626108af0a7b42d028783c69c3658a212f3b617793702e319cb7a3afcb8"
         }
       ],
-      "mount": []
+      "mount": [
+        "filsysmount -v 7 v7-bostic.disk mnt"
+      ]
     },
     {
       "name": "32v",

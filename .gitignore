@@ -6,6 +6,9 @@ images/*
 __pycache__/
 *.pyc
 
+# install driver logs
+*.log
+
 # autotools build artifacts (junk from running ./configure)
 # configure, Makefile.in, install-sh and missing are tracked (no autotools needed)
 /Makefile
