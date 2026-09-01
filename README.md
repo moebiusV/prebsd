@@ -75,8 +75,9 @@ Where each image came from, who made it, and the page it was fetched from:
 | V7 (tape) | Keith Bostic / gunkies | gunkies install guide | <https://gunkies.org/wiki/Installing_v7_on_SIMH> |
 | 32V (tape) | TUHS / Caldera | 32V distribution tape | <https://www.tuhs.org/Archive/> |
 
-The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) were built by this
-project from that tape and are distributed directly.
+The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) and the V7 disk image
+(`v7-bostic.disk`, built by `pdp11/installv7.py` from the Keith Bostic tape)
+were built by this project and are distributed directly from `dist/`.
 
 ## Mounting (filsysmount)
 
