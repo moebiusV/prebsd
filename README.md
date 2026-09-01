@@ -15,10 +15,17 @@ linker against the ported ones.
 ```
 
 Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), `curl`, and Python 3.
-32V needs the VAX-11/780 simulator; the default Debian `simh` package builds
-only MicroVAX, so compile `vax780` from open-simh (see `vax/README.md`).  The
-console is served over telnet (`SET CONSOLE TELNET`), so nothing but the
-simulator binary and a raw TCP driver is needed.
+Fetched images (including the pre-built `v7-bostic` disk) boot straight from
+`images/` with no other tooling.  The one build step — turning a tape into a
+bootable disk (`pdp11/installv7.py`) — is where
+[filsys](https://github.com/moebiusV/filsys) comes in: `restor` leaves the free
+list broken, and `fsck.filsys -s` rebuilds it.  filsys links libfuse3 to build
+`mount.filsys`, so that pulls in FUSE 3, though `fsck.filsys` itself reads and
+writes the image directly and needs no FUSE.  32V needs the VAX-11/780 simulator;
+the default Debian `simh` package builds only MicroVAX, so compile `vax780` from
+open-simh (see `vax/README.md`).  The console is served over telnet
+(`SET CONSOLE TELNET`), so nothing but the simulator binary and a raw TCP driver
+is needed.
 
 ## Layout
 
@@ -47,6 +54,8 @@ rather than crawling the tree file-by-file.
 | `v7-rl`          | V7, RL02, 11/45  | yes | yes | `rl(0,0)rl2unix`                |
 | `v7-narukeh`     | V7, RP06         | yes | no  | `boot` -> `hp(0,0)unix`          |
 | `v7-keithbostic` | V7 tape, install | yes | yes | install (gunkies guide)         |
+| `v7-bostic`      | V7, RP06, 11/70  | yes | yes | `boot` -> `hp(0,0)hptmunix`      |
+| `32v`            | 32V, RP06, VAX   | yes | yes | —                                |
 
 ## Notes
 
@@ -77,9 +86,11 @@ Where each image came from, who made it, and the page it was fetched from:
 
 The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) and the V7 disk image
 (`v7-bostic.disk`, built by `pdp11/installv7.py` from the Keith Bostic tape)
-were built by this project and are distributed directly from `dist/`.
+were built by this project and are distributed directly from `dist/`.  The V7
+disk is also listed in `images.json` as `v7-bostic` (`./fetch v7-bostic` grabs
+the gzip straight from `dist/`), so it boots without running the install.
 
-## Mounting (filsysmount)
+## Mounting (mount.filsys)
 
 Mounting is done by [filsys](https://github.com/moebiusV/filsys), a FUSE driver
 for V4-V7 and 32V filesystem images.  The RP06 images (V7 `v7-rp06.disk`, 32V
@@ -87,17 +98,17 @@ for V4-V7 and 32V filesystem images.  The RP06 images (V7 `v7-rp06.disk`, 32V
 `/usr` at 18392 (byte offset 9416704).
 
     # V7 (v7-rp06.disk)
-    filsysmount -v 7  v7-rp06.disk mnt
-    filsysmount -v 7  -o offset=9416704 v7-rp06.disk mnt/usr
+    mount.filsys -v 7  v7-rp06.disk mnt
+    mount.filsys -v 7  -o offset=9416704 v7-rp06.disk mnt/usr
 
     # 32V (32v-rp06.disk)
-    filsysmount -v 32 32v-rp06.disk mnt
-    filsysmount -v 32 -o offset=9416704 32v-rp06.disk mnt/usr
+    mount.filsys -v 32 32v-rp06.disk mnt
+    mount.filsys -v 32 -o offset=9416704 32v-rp06.disk mnt/usr
 
     # single-filesystem images
-    filsysmount -v 4  v4-rk05.disk mnt        # V4 root
-    filsysmount -v 5  v5-root.disk mnt        # V5 root
-    filsysmount -v 6  v6-rk0 mnt              # V6 root
-    filsysmount -v 32 32v-root.disk mnt       # 32V root only
+    mount.filsys -v 4  v4-rk05.disk mnt        # V4 root
+    mount.filsys -v 5  v5-root.disk mnt        # V5 root
+    mount.filsys -v 6  v6-rk0 mnt              # V6 root
+    mount.filsys -v 32 32v-root.disk mnt       # 32V root only
 
 Mount the root first, then nest the `/usr` mount on top.

@@ -21,7 +21,7 @@
         }
       ],
       "mount": [
-        "filsysmount -v 4 v4-rk05.disk mnt"
+        "mount.filsys -v 4 v4-rk05.disk mnt"
       ]
     },
     {
@@ -40,7 +40,7 @@
         }
       ],
       "mount": [
-        "filsysmount -v 5 v5-root.disk mnt"
+        "mount.filsys -v 5 v5-root.disk mnt"
       ]
     },
     {
@@ -69,7 +69,7 @@
         }
       ],
       "mount": [
-        "filsysmount -v 6 v6-rk0 mnt"
+        "mount.filsys -v 6 v6-rk0 mnt"
       ]
     },
     {
@@ -88,8 +88,8 @@
         }
       ],
       "mount": [
-        "filsysmount -v 7 v7-rp06.disk mnt",
-        "filsysmount -v 7 -o offset=9416704 v7-rp06.disk mnt/usr"
+        "mount.filsys -v 7 v7-rp06.disk mnt",
+        "mount.filsys -v 7 -o offset=9416704 v7-rp06.disk mnt/usr"
       ]
     },
     {
@@ -109,7 +109,7 @@
         }
       ],
       "mount": [
-        "filsysmount -v 7 v7-rl02.disk mnt"
+        "mount.filsys -v 7 v7-rl02.disk mnt"
       ]
     },
     {
@@ -128,8 +128,8 @@
         }
       ],
       "mount": [
-        "filsysmount -v 7 v7-narukeh-rp06.disk mnt",
-        "filsysmount -v 7 -o offset=9416704 v7-narukeh-rp06.disk mnt/usr"
+        "mount.filsys -v 7 v7-narukeh-rp06.disk mnt",
+        "mount.filsys -v 7 -o offset=9416704 v7-narukeh-rp06.disk mnt/usr"
       ]
     },
     {
@@ -148,8 +148,28 @@
         }
       ],
       "mount": [
-        "filsysmount -v 7 v7-bostic.disk mnt",
-        "filsysmount -v 7 -o offset=9416704 v7-bostic.disk mnt/usr"
+        "mount.filsys -v 7 v7-bostic.disk mnt",
+        "mount.filsys -v 7 -o offset=9416704 v7-bostic.disk mnt/usr"
+      ]
+    },
+    {
+      "name": "v7-bostic",
+      "description": "V7, RP06, PDP-11/70",
+      "provenance": "prebsd (built from the Keith Bostic tape)",
+      "ini": "v7-keithbostic.ini",
+      "boot": "boot>:|hp(0,0)hptmunix>mem =",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/v7-bostic.disk.gz",
+          "to": "v7-bostic.disk",
+          "sha256": "9a5abe706a9d647b0c6df0b5d4d2fd0b605b326eeb7656e68da1d3ae938ddbb9"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v 7 v7-bostic.disk mnt",
+        "mount.filsys -v 7 -o offset=9416704 v7-bostic.disk mnt/usr"
       ]
     },
     {
@@ -168,9 +188,9 @@
         }
       ],
       "mount": [
-        "filsysmount -v 32 32v-rp06.disk mnt",
-        "filsysmount -v 32 -o offset=9416704 32v-rp06.disk mnt/usr",
-        "filsysmount -v 32 32v-root.disk mnt"
+        "mount.filsys -v 32 32v-rp06.disk mnt",
+        "mount.filsys -v 32 -o offset=9416704 32v-rp06.disk mnt/usr",
+        "mount.filsys -v 32 32v-root.disk mnt"
       ]
     }
   ]

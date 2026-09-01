@@ -53,8 +53,8 @@ exactly (`isize = 8189`).
 After the restore, `installv7.py` writes the `hpuboot` boot block to block 0.
 Mount with the `filsys` tools:
 
-    filsysmount -v 7 v7-bostic.disk mnt
-    filsysmount -v 7 -o offset=9416704 v7-bostic.disk mnt/usr
+    mount.filsys -v 7 v7-bostic.disk mnt
+    mount.filsys -v 7 -o offset=9416704 v7-bostic.disk mnt/usr
 
 ## Free list repair after restore
 
