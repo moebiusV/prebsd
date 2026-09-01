@@ -542,12 +542,8 @@ int main(int argc, char **argv)
 			fprintf(stderr, "bad image json: %s\n", argv[1]);
 			return 1;
 		}
-		/* json `ini` is relative to the json's directory */
-		char jdir[4096], jbase[256], full[4096];
-		split_path(argv[1], jdir, sizeof jdir, jbase, sizeof jbase);
-		snprintf(full, sizeof full, "%s/%s", jdir, ini);
-		free(ini);
-		ini = strdup(full);
+		/* the json `ini` is used as-is: a CWD-relative or absolute path,
+		 * exactly like the .ini argument itself */
 
 		mkdir(images_dir, 0755);
 		for (int i = 0; i < nfiles; i++) {
