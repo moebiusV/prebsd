@@ -42,20 +42,40 @@ The two filesystems, matching the RP06 partition table in `usr/sys/dev/hp.c`:
 
 | fs    | size (blocks) | disk arg      | tape dump |
 |-------|---------------|---------------|-----------|
-| root  | 9614          | `hp(0,0)`     | `tm(0,5)` |
+| root  | 5000          | `hp(0,0)`     | `tm(0,5)` |
 | /usr  | 322278        | `hp(0,18392)` | `tm(0,6)` |
 
-The root filesystem must be **9614 blocks** (the full RP06 `a` partition) — the
-gunkies.org recipe's 5000 blocks is too small and `restor` dies with `Out of
-space`.  `/usr` is addressed by its block offset (`hp(0,18392)` = cylinder 44,
-the `c` partition).  The standalone `mkfs` inode density reproduces the
-original `/usr` superblock exactly (`isize = 8189`).
+The root filesystem is **5000 blocks**, matching the gunkies.org recipe (RP06
+partition 0 itself is 9614 blocks, but the dump fits in 5000).  `/usr` is
+addressed by its block offset (`hp(0,18392)` = cylinder 44, partition 7).
+The standalone `mkfs` inode density reproduces the original `/usr` superblock
+exactly (`isize = 8189`).
 
 After the restore, `installv7.py` writes the `hpuboot` boot block to block 0.
 Mount with the `filsys` tools:
 
     filsysmount -v 7 v7-bostic.disk mnt
     filsysmount -v 7 -o offset=9416704 v7-bostic.disk mnt/usr
+
+## Free list repair after restore
+
+`restor` does not rebuild the free list: it leaves `s_tfree` intact, but the
+chained free-block dump blocks are gone, so the disk can't allocate new blocks.
+The V7 fix is `icheck -s` (the `restor(1m)` page says it "must be done"), but
+`icheck`/`dcheck` aren't loadable from the tape — only `mkfs` and `restor` are —
+and they must run on a dismounted filesystem.  On the root, which can't be
+dismounted, run `icheck -s`, `sync`, then reboot immediately so the kernel
+doesn't write back its stale superblock.
+
+`fsck.filsys` does the same repair on the host:
+
+    fsck.filsys -v 7 v7-bostic.disk      # check (reports the broken free list)
+    fsck.filsys -v 7 -s v7-bostic.disk   # rebuild the free list (icheck -s)
+    fsck.filsys -v 7 -r v7-bostic.disk   # resolve duplicate blocks (salv -a)
+
+It covers the V7 repair toolkit: `icheck` (blocks/inodes), `dcheck` (link
+counts), `ncheck` (inode -> pathname, `-n ino`), `clri` (clear an inode,
+`-c ino`); `-s` is `icheck -s`, `-r` is `salv -a`.
 
 ## Booting the installed disk
 
