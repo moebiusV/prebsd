@@ -1,7 +1,7 @@
 /*
  * prebsd — fetch and boot a Research Unix disk image on simh.
  *
- * Usage: prebsd <file>
+ * Usage: prebsd <file> [command]
  *
  * <file> is either:
  *   - a simh .ini (device/CPU/boot config); the boot sequence is looked up
@@ -21,6 +21,10 @@
  * its telnet console is driven through the boot sequence, answering telnet IAC
  * negotiation, and `stty -lcase` is sent once the shell is reached (V7's KL11
  * driver hard-codes LCASE, uppercasing output).
+ *
+ * An optional `command` is run once the single-user shell is reached (e.g.
+ * `icheck /dev/rp0; dcheck /dev/rp0`); its output is captured in the console
+ * dump below.
  *
  * This is the C rewrite of boot.py + fetch.
  */
@@ -433,6 +437,27 @@ static int wait_for(int fd, const char *sub, int timeout)
 	return has_sub(sub);
 }
 
+/* like has_sub(), but only over console bytes added after `from` — used to wait
+ * for a *new* prompt (the console already holds a stale "# " from boot). */
+static int has_sub_since(const char *sub, size_t from)
+{
+	size_t l = strlen(sub);
+	if (l == 0 || l > console_len || from >= console_len)
+		return 0;
+	for (size_t i = from; i + l <= console_len; i++)
+		if (memcmp(console + i, sub, l) == 0)
+			return 1;
+	return 0;
+}
+
+static int wait_for_since(int fd, const char *sub, int timeout, size_t from)
+{
+	time_t end = time(NULL) + timeout;
+	while (time(NULL) < end && !has_sub_since(sub, from))
+		poll_console(fd, 0.5);
+	return has_sub_since(sub, from);
+}
+
 static void send_console(int fd, const char *s)
 {
 	char buf[512];
@@ -515,10 +540,11 @@ static int parse_port(const char *ini)
 
 int main(int argc, char **argv)
 {
-	if (argc != 2) {
-		fprintf(stderr, "usage: %s <file.ini|file.json>\n", argv[0]);
+	if (argc < 2 || argc > 3) {
+		fprintf(stderr, "usage: %s <file.ini|file.json> [command]\n", argv[0]);
 		return 2;
 	}
+	const char *cmd = (argc == 3) ? argv[2] : NULL;
 
 	char self[4096];
 	ssize_t r = readlink("/proc/self/exe", self, sizeof self - 1);
@@ -609,9 +635,28 @@ int main(int argc, char **argv)
 	}
 	free(seq);
 
-	/* V7's KL11 console driver hard-codes LCASE (uppercases output); clear it */
-	send_console(fd, "stty -lcase");
-	poll_console(fd, 0.5);
+	/* Wait for the single-user shell prompt. */
+	int at_shell = wait_for(fd, "# ", 60);
+
+	/* V7's KL11 console driver hard-codes LCASE (uppercases output); clear it
+	 * and wait for the shell to act on it — a fresh "# " prompt — so that a
+	 * following command's output is mixed-case. */
+	if (at_shell) {
+		size_t mark = console_len;
+		send_console(fd, "stty -lcase");
+		if (!wait_for_since(fd, "# ", 30, mark))
+			printf("[driver] TIMEOUT waiting for stty -lcase\n");
+	}
+
+	/* run the optional post-boot command (a /bin/sh command line).  Wait for a
+	 * *new* "# " prompt — the console already holds the boot prompt, so search
+	 * from the length at command-send time. */
+	if (cmd) {
+		size_t mark = console_len;
+		send_console(fd, cmd);
+		if (at_shell && !wait_for_since(fd, "# ", 90, mark))
+			printf("[driver] TIMEOUT waiting for command completion\n");
+	}
 
 	/* settle, then tear down and report */
 	poll_console(fd, 1.0);
