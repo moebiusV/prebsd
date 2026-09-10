@@ -336,8 +336,8 @@
     },
     {
       "name": "coherent",
-      "description": "Coherent 4.10 (Mark Williams Co.), base system disk 1",
-      "provenance": "PUPS archive (vector.comm.sfu.ca), disk1.4.10.dd",
+      "description": "Coherent 4.10 (Mark Williams Co.), base system floppies 1-4",
+      "provenance": "PUPS archive (vector.comm.sfu.ca), disk1..4.4.10.dd",
       "ini": "",
       "boot": "",
       "cc": true,
@@ -347,10 +347,28 @@
           "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/coherent-4.10-disk1.disk.gz",
           "to": "coherent-4.10-disk1.disk",
           "sha256": "e6a046186afe8f42259b678ee6ac1cc759e0c1836f8baaddb1b99097d5bac0e2"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/coherent-4.10-disk2.disk.gz",
+          "to": "coherent-4.10-disk2.disk",
+          "sha256": "d350aa49c84911d88cb0be6ab89891e9bcdffb0e51ab65aad35bb17a0827d895"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/coherent-4.10-disk3.disk.gz",
+          "to": "coherent-4.10-disk3.disk",
+          "sha256": "41cb03ba41365aba10cb3673e07cef3160b1b82aae616a3f0a24360e8a68fe8c"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/coherent-4.10-disk4.disk.gz",
+          "to": "coherent-4.10-disk4.disk",
+          "sha256": "3d0c3e1ea41510d8c183e9fec4892416b2907daa3528182caa852fbeaa332119"
         }
       ],
       "mount": [
-        "mount.filsys -v coherent coherent-4.10-disk1.disk mnt"
+        "mount.filsys -v coherent coherent-4.10-disk1.disk mnt",
+        "mount.filsys -v coherent coherent-4.10-disk2.disk mnt2",
+        "mount.filsys -v coherent coherent-4.10-disk3.disk mnt3",
+        "mount.filsys -v coherent coherent-4.10-disk4.disk mnt4"
       ]
     }
   ]
