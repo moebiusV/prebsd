@@ -218,6 +218,102 @@
         "mount.filsys -v 32 -o offset=9416704 32v-rp06.disk mnt/usr",
         "mount.filsys -v 32 32v-root.disk mnt"
       ]
+    },
+    {
+      "name": "bsd29",
+      "description": "2.9BSD, RL02, PDP-11/70",
+      "provenance": "ftp.math.utah.edu 29bsd.dsk.gz; free list rebuilt (fsck -s)",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/29bsd-rl02.disk.gz",
+          "to": "29bsd-rl02.disk",
+          "sha256": "a57150db421f98b98ad410c96d483fe3a17f7d9063025bcebff91fae5a03698d"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v bsd29 29bsd-rl02.disk mnt"
+      ]
+    },
+    {
+      "name": "bsd211",
+      "description": "2.11BSD, RP06, PDP-11/70",
+      "provenance": "TUHS 2.11BSD root.dsk (RP06)",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/211bsd-rp06.disk.gz",
+          "to": "211bsd-rp06.disk",
+          "sha256": "efd26221c6f6d68b600baf820898db84e83012749d4427938bf742178f9d025b"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v bsd211 211bsd-rp06.disk mnt"
+      ]
+    },
+    {
+      "name": "xenix",
+      "description": "Xenix 386 2.3.1, disk",
+      "provenance": "xenix-386-2.3.1-n1.dsk (retro archive)",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": false,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/xenix-386-2.3.1.disk.gz",
+          "to": "xenix-386-2.3.1.disk",
+          "sha256": "0bdccc1865feadcd68c81808bfec51b80244cdb95d7d5a658ede5397d56ef79c"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v xenix xenix-386-2.3.1.disk mnt"
+      ]
+    },
+    {
+      "name": "sysiii",
+      "description": "System III, VAX root",
+      "provenance": "squoze.net sysIII_vax_root.img",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysiii-vax-root.disk.gz",
+          "to": "sysiii-vax-root.disk",
+          "sha256": "f2c68909c560ddaf64d8c7e5a4c6fb76d9304bd61a9b1ea5891a8c2fcdea1f12"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v sysiii sysiii-vax-root.disk mnt"
+      ]
+    },
+    {
+      "name": "sysvr2",
+      "description": "System V Release 2, RP06, VAX (fsck reports dup/bad blocks - under investigation)",
+      "provenance": "squoze.net SYSVr2_VAX.7z (sysvr2.rp6)",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysvr2-rp06.disk.gz",
+          "to": "sysvr2-rp06.disk",
+          "sha256": "758c240c61e1784b95a57200c1f6082db7436f2f42cc9b2e4b808c9dbcc40838"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v sysvr2 sysvr2-rp06.disk mnt",
+        "mount.filsys -v sysvr2 -o offset=9416704 sysvr2-rp06.disk mnt/usr"
+      ]
     }
   ]
 }
