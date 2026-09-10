@@ -314,6 +314,44 @@
         "mount.filsys -v sysvr2 sysvr2-rp06.disk mnt",
         "mount.filsys -v sysvr2 -o offset=9416704 sysvr2-rp06.disk mnt/usr"
       ]
+    },
+    {
+      "name": "sysvr4",
+      "description": "System V Release 4 (Intel Unix SVR4.0 V2.0), Base System install floppy",
+      "provenance": "archive.org intel-unix-sv-r4-v2 (58 x 1.2M install floppies)",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysvr4-base.disk.gz",
+          "to": "sysvr4-base.disk",
+          "sha256": "78c31e99e4e77627b1fd1bdc74f759602ee882a432c6c33776e1a5c7a9aec113"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v sysvr4 sysvr4-base.disk mnt"
+      ]
+    },
+    {
+      "name": "coherent",
+      "description": "Coherent 4.10 (Mark Williams Co.), base system disk 1",
+      "provenance": "PUPS archive (vector.comm.sfu.ca), disk1.4.10.dd",
+      "ini": "",
+      "boot": "",
+      "cc": true,
+      "src": true,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/coherent-4.10-disk1.disk.gz",
+          "to": "coherent-4.10-disk1.disk",
+          "sha256": "e6a046186afe8f42259b678ee6ac1cc759e0c1836f8baaddb1b99097d5bac0e2"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v coherent coherent-4.10-disk1.disk mnt"
+      ]
     }
   ]
 }
