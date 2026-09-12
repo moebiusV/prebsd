@@ -370,6 +370,45 @@
         "mount.filsys -v coherent coherent-4.10-disk3.disk mnt3",
         "mount.filsys -v coherent coherent-4.10-disk4.disk mnt4"
       ]
+    },
+    {
+      "name": "sysiii-pdp11",
+      "description": "System III, PDP-11, RP06 (installed root + /usr)",
+      "provenance": "prebsd (installed from the squoze.net 'vax780' tape, which is PDP-11)",
+      "ini": "sysiii-pdp11.ini",
+      "boot": "#0unixhptm>unix>single-user># ",
+      "cc": true,
+      "src": false,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysiii-pdp11.disk.gz",
+          "to": "sysiii-pdp11.disk",
+          "sha256": "8da16f8673bb7253b27f098fef821cc8a2a4bf5b5b58af3b9285b6302e7f0deb"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v sysiii -a pdp11 sysiii-pdp11.disk mnt",
+        "mount.filsys -v sysiii -a pdp11 -o offset=9416704 sysiii-pdp11.disk mnt/usr"
+      ]
+    },
+    {
+      "name": "sysiii-pdp11-original",
+      "description": "System III, PDP-11, RP06 -- post-install state before fsck (1 dup block, 5 orphaned FIFOs, stale s_tinode)",
+      "provenance": "prebsd (same install as sysiii-pdp11, pre-fsck; the oracle corruption fixture)",
+      "ini": "sysiii-pdp11.ini",
+      "boot": "#0unixhptm>unix>single-user># ",
+      "cc": true,
+      "src": false,
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysiii-pdp11-original.disk.gz",
+          "to": "sysiii-pdp11-original.disk",
+          "sha256": "b5c9b136bcd8089b4bd6d0ac15d2fd1d45ee3bc29845910d888deac8626381f8"
+        }
+      ],
+      "mount": [
+        "mount.filsys -v sysiii -a pdp11 sysiii-pdp11-original.disk mnt"
+      ]
     }
   ]
 }
