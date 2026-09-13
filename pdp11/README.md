@@ -99,5 +99,7 @@ comes back zero) — while the **kernel** (`hptmunix`) is built for the **11/70*
 `hpuboot` (the 512-byte RP06 boot block written to block 0) is byte-identical
 to the original shipped in the Bostic tape's `/usr/mdec` — assembled by the
 ported V7 assembler from `hpuboot.s`, then stripped the way V7's `strip` does
-(`a_syms = 0`, `a_flag |= 1`).  The un-stripped source form lives in the filsys
-project (`boot/hpuboot.s`).
+(`a_syms = 0`, `a_flag |= 1`).  The un-stripped sources are `hpuboot.s` (RP06)
+and `rpuboot.s` (RP03/04/05/06), and `rpuboot` is the RP03/04/05/06 bootstrap
+in the same stripped form.  Pass one to `mkfs.filsys -b` to drop it into block
+0 of a freshly made filesystem.
