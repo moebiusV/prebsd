@@ -232,7 +232,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 prebsddir = $(libdir)/prebsd
-EXTRA_DIST = vax ini man images.json fetch boot.py
+EXTRA_DIST = vax pdp11 ini man images.json fetch boot.py
 all: all-am
 
 .SUFFIXES:

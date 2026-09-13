@@ -35,6 +35,8 @@ is needed.
   * `ini/*.ini`        one simh config per image (device / CPU / memory / boot)
   * `boot.py`          the old Python console driver (superseded by `prebsd`)
   * `dist/`            the images, gzipped, `v4-`/`v5-`/`v6-`/`v7-`/`32v-` names
+  * `pdp11/`           V7 (PDP-11) tape -> disk install scripts, plus the
+                       `hpuboot`/`rpuboot` boot blocks and their `.s` sources
   * `vax/`             32V (VAX) tape -> disk install scripts
 
 ## The images

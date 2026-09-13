@@ -25,4 +25,4 @@ uninstall-hook:
 	      $(DESTDIR)$(mandir)/man1/fetch.1 \
 	      $(DESTDIR)$(mandir)/man1/boot.1
 
-EXTRA_DIST = vax ini man images.json fetch boot.py
+EXTRA_DIST = vax pdp11 ini man images.json fetch boot.py
