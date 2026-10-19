@@ -1,5 +1,5 @@
 #!/bin/sh
-# fetch - download a V4/V5/V6/V7 disk image (or tape) for prebsd.
+# fetch - download a V4/V5/V6/V7/32V/TOPS-10 ... disk image (or tape) for prebsd.
 #
 #   ./fetch             list available images
 #   ./fetch <name>      download + unpack the named image into images/
@@ -47,7 +47,7 @@ d = json.load(open('images.json'))
 for img in d['images']:
     if img['name'] == name:
         for f in img.get('files', []):
-            print(f"{f['url']}\t{f.get('from', '')}\t{f['to']}\t{f.get('sha256', '')}")
+            print(f"{f['url']}\t{f.get('from') or '-'}\t{f['to']}\t{f.get('sha256') or '-'}")
         break
 PY
 }
@@ -112,7 +112,8 @@ dl() {  # dl URL FROM TO SHA256
             unzip -o "$tmp" -d "$DEST" >/dev/null
             rm -f "$tmp"
             # the archive holds more than the disk (docs, pdf); move the disk
-            [ -n "$from" ] && [ -f "$DEST/$from" ] && mv "$DEST/$from" "$DEST/$to"
+            # (a zip of several disks lists each as its own file, from = to: they are all out now)
+            [ -n "$from" ] && [ "$from" != "$to" ] && [ -f "$DEST/$from" ] && mv "$DEST/$from" "$DEST/$to"
             ;;
         *)
             mv "$tmp" "$DEST/$to"
@@ -136,6 +137,9 @@ fetch_one() {
     echo "== $n =="
     printf '%s\n' "$files" | while IFS="$(printf '\t')" read -r url from to sha; do
         [ -n "$url" ] || continue
+        # an empty field would vanish (tab is white space to read): '-' stands for none
+        [ "$from" != "-" ] || from=
+        [ "$sha" != "-" ] || sha=
         dl "$url" "$from" "$to" "$sha"
     done
 }

@@ -409,6 +409,64 @@
       "mount": [
         "mount.filsys -v sysiii -a pdp11 sysiii-pdp11-original.disk mnt"
       ]
+    },
+    {
+      "name": "tops10-603-ka",
+      "description": "TOPS-10 6.03, four RP03 packs, PDP-10 KA10 (no floating conversion instructions)",
+      "provenance": "PiDP-10 project (obsolescence.dev), built from Richard Cornwell's tapes",
+      "os": "tops10",
+      "simh": "pdp10-ka",
+      "ini": "tops10-603-ka.ini",
+      "boot": "SYSTEM>WHY RELOAD:|SCHED>DATE:|21-APR-78>TIME:|1000>STARTUP OPTION:|QUICK>(CP)",
+      "ready": "(CP)",
+      "cc": true,
+      "src": false,
+      "files": [
+        {
+          "url": "https://obsolescence.dev/pidp10-sw/tops603ka.zip",
+          "from": "ka_dskb0.rp3",
+          "to": "ka_dskb0.rp3",
+          "sha256": "74a7c83e48da96986d559178c6c6c69605ce8c81cdc8dc6fc5f3bfb7d318110b"
+        },
+        {
+          "url": "https://obsolescence.dev/pidp10-sw/tops603ka.zip",
+          "from": "ka_dskb1.rp3",
+          "to": "ka_dskb1.rp3",
+          "sha256": "7476f53621b170305e514634e0d4218ed64b37dbb020cd8958b5bf25d61571ec"
+        },
+        {
+          "url": "https://obsolescence.dev/pidp10-sw/tops603ka.zip",
+          "from": "ka_dskb2.rp3",
+          "to": "ka_dskb2.rp3",
+          "sha256": "910c3889ae99dea6d06df93011d05d25224672e7adfa30bb5577489e68d00cc0"
+        },
+        {
+          "url": "https://obsolescence.dev/pidp10-sw/tops603ka.zip",
+          "from": "ka_dskb3.rp3",
+          "to": "ka_dskb3.rp3",
+          "sha256": "ad55374ee68936fe06ff8e8c584f11ea3216a9b6c10d5c6322c9f376b73e0782"
+        }
+      ]
+    },
+    {
+      "name": "tops10-603-ki",
+      "description": "TOPS-10 6.03, four RP03 packs, PDP-10 KI10 (floating point: FLTR, FIX); disks built by pdp10/install-ki.sh",
+      "provenance": "Richard Cornwell's pre-built system tape kidp_system.tap, restored to disks by pdp10/install-ki.sh",
+      "os": "tops10",
+      "simh": "pdp10-ki",
+      "ini": "tops10-603-ki.ini",
+      "boot": "SYSTEM>WHY RELOAD:|SCHED>DATE:|21-APR-78>TIME:|1000>STARTUP OPTION:|QUICK>(CP)",
+      "ready": "(CP)",
+      "cc": true,
+      "src": false,
+      "install": "pdp10/install-ki.sh",
+      "files": [
+        {
+          "url": "https://sky-visions.com/dec/tops603/tapes/kidp_system.tap.bz2",
+          "to": "ki-system.tap",
+          "sha256": "dde75230227b40c94b0169fcbc2c7e0e8ffed70b8eea59e6945f248c113c1d91"
+        }
+      ]
     }
   ]
 }

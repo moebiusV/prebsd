@@ -1,6 +1,6 @@
-# prebsd - fetch and run Research Unix V4-V7 and 32V on SIMH
+# prebsd - fetch and run Research Unix V4-V7, 32V and TOPS-10 on SIMH
 
-Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11` and `vax780` simulators), driving the console over telnet and
+Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11` and `vax780` simulators), and DEC's TOPS-10 6.03 (the `pdp10-ka` and `pdp10-ki` simulators: TOPS-10 is not Unix, but it is older than BSD, and the PDP-10 is where C's floating point and 36 bit words came from), driving the console over telnet and
 dropping you at (or running a command in) the single-user shell.  Started as
 part of the pdp11-toolchain project, to run the *real* V7 compiler/assembler/
 linker against the ported ones.
@@ -60,6 +60,8 @@ rather than crawling the tree file-by-file.
 | `v7-bostic`      | V7, RP06, 11/70  | yes | yes | `boot` -> `hp(0,0)hptmunix`      |
 | `32v`            | 32V tape, install| yes | yes | install (`vax/install32v.py`)    |
 | `32v-disk`       | 32V, RP06, VAX   | yes | yes | —                                |
+| `tops10-603-ka`  | TOPS-10 6.03, 4 RP03, KA10 | — | no | `SYSTEM` -> `SCHED` -> date (see `pdp10/README.md`) |
+| `tops10-603-ki`  | TOPS-10 6.03, 4 RP03, KI10 | — | no | same; disks made by `pdp10/install-ki.sh` |
 
 ## Notes
 
@@ -72,6 +74,11 @@ rather than crawling the tree file-by-file.
   would be a kernel rebuild without `LCASE` in `kl.c`.
 * The `.ini` files enable `SET CONSOLE TELNET=10023`; `boot.py` answers the
   telnet IAC negotiation so option bytes don't leak into the output.
+
+* The images with `"os": "tops10"` in `images.json` are not Unix: `boot.py` runs the
+  simulator named in `"simh"` (`pdp10-ka`, `pdp10-ki`; `$SIMH` overrides), takes the
+  console port from the `.ini`, does not send `stty`, and counts the boot as done when
+  the console shows the image's `"ready"` text.  See `pdp10/README.md`.
 
 ## Sources
 
@@ -87,6 +94,8 @@ Where each image came from, who made it, and the page it was fetched from:
 | V7 (pure install) | narukeh | <https://github.com/narukeh/research_unix_v7> (`rp06-0.disk.xz`) | <https://github.com/narukeh/research_unix_v7> |
 | V7 (tape) | Keith Bostic / gunkies | gunkies install guide | <https://gunkies.org/wiki/Installing_v7_on_SIMH> |
 | 32V (tape) | TUHS / Caldera | 32V distribution tape | <https://www.tuhs.org/Archive/> |
+| TOPS-10 6.03 KA10 (4 RP03) | PiDP-10 project, from Richard Cornwell's tapes | <https://obsolescence.dev/pidp10-sw/tops603ka.zip> | <https://obsolescence.dev/pdp10.html> |
+| TOPS-10 6.03 KI10 (system tape) | Richard Cornwell | <https://sky-visions.com/dec/tops603/tapes/kidp_system.tap.bz2> | <https://sky-visions.com/dec/tops10.shtml> |
 
 The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) and the V7 disk image
 (`v7-bostic.disk`, built by `pdp11/installv7.py` from the Keith Bostic tape)

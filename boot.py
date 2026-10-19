@@ -102,6 +102,9 @@ def load_manifest():
                 'desc': img.get('description', ''),
                 'ini': img.get('ini', ''),
                 'boot': img.get('boot', ''),
+                'simh': img.get('simh', ''),       # the simulator (default pdp11, or $SIMH)
+                'ready': img.get('ready', ''),     # what the console shows when booted (default "# ")
+                'os': img.get('os', 'unix'),       # not unix: no stty, no shell
             })
     except (OSError, ValueError):
         pass
@@ -122,6 +125,26 @@ def lookup_boot(ini):
     return None
 
 
+def image_for_ini(ini):
+    base = os.path.basename(ini)
+    for row in load_manifest():
+        if os.path.basename(row['ini']) == base:
+            return row
+    return {}
+
+
+def ini_port(ini, default):
+    """the port of `set console telnet=N` in the .ini"""
+    try:
+        for line in open(ini):
+            low = line.lower()
+            if 'telnet=' in low and 'console' in low and not low.lstrip().startswith(';'):
+                return int(low.split('telnet=')[1].split()[0])
+    except (OSError, ValueError):
+        pass
+    return default
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--ini', default='headless.ini', help='simh config file')
@@ -132,7 +155,8 @@ def main():
                     help='list bootable images from images.json and exit')
     ap.add_argument('--img', type=int, default=None, metavar='N',
                     help='boot the Nth image from --list (1-based)')
-    ap.add_argument('--port', type=int, default=10023, help='telnet port')
+    ap.add_argument('--port', type=int, default=None,
+                    help='telnet port (default: the .ini\'s set console telnet=, else 10023)')
     ap.add_argument('--cmd', default=None,
                     help='command to run after boot (captured)')
     ap.add_argument('--timeout', type=int, default=90,
@@ -160,7 +184,12 @@ def main():
     if args.boot is None:
         args.boot = lookup_boot(args.ini) or 'boot>:|hp(0,0)unix>mem ='
 
-    simh = os.environ.get('SIMH', 'pdp11')
+    img = image_for_ini(args.ini)
+    simh = os.environ.get('SIMH') or img.get('simh') or 'pdp11'
+    ready = img.get('ready') or '# '
+    unix = img.get('os', 'unix') == 'unix'
+    if args.port is None:
+        args.port = ini_port(args.ini, 10023)
     ini_dir = os.path.dirname(os.path.abspath(args.ini)) or '.'
     proc = subprocess.Popen(
         [simh, os.path.basename(args.ini)],
@@ -225,17 +254,18 @@ def main():
             print('[driver] TIMEOUT waiting for %r' % expect)
             break
 
-    # V7's KL11 console driver hard-codes LCASE in t_flags at open time
-    # (usr/sys/dev/kl.c: tp->t_flags = EVENP|LCASE|...), on the assumption
-    # that the console is a Model 33 Teletype - which could only print
-    # UPPERCASE.  Our telnet console is a full mixed-case terminal, so once
-    # we reach the shell, clear the flag: output then keeps its case, and
-    # input stops lowercasing typed uppercase (the -S -> -s trap).  All the
-    # characters in this command are already lowercase, so it survives the
-    # LCASE input translation untouched.
-    sock.sendall(b'stty -lcase\r')
-    print('[driver] sent: stty -lcase')
-    poll(0.5)
+    if unix:
+        # V7's KL11 console driver hard-codes LCASE in t_flags at open time
+        # (usr/sys/dev/kl.c: tp->t_flags = EVENP|LCASE|...), on the assumption
+        # that the console is a Model 33 Teletype - which could only print
+        # UPPERCASE.  Our telnet console is a full mixed-case terminal, so once
+        # we reach the shell, clear the flag: output then keeps its case, and
+        # input stops lowercasing typed uppercase (the -S -> -s trap).  All the
+        # characters in this command are already lowercase, so it survives the
+        # LCASE input translation untouched.
+        sock.sendall(b'stty -lcase\r')
+        print('[driver] sent: stty -lcase')
+        poll(0.5)
 
     if args.cmd:
         sock.sendall((args.cmd + '\r').encode())
@@ -255,8 +285,12 @@ def main():
     print('\n=== console ===')
     print(txt)
     up = txt.upper()
-    booted = ('# ' in up) or ('@' in up)
-    print('=== [driver] booted to a shell prompt: %s ===' % booted)
+    if unix:
+        booted = ('# ' in up) or ('@' in up)
+        print('=== [driver] booted to a shell prompt: %s ===' % booted)
+    else:
+        booted = ready.upper() in up
+        print('=== [driver] booted (%r on the console): %s ===' % (ready, booted))
     return 0 if booted else 1
 
 
