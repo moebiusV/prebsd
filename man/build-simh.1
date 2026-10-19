@@ -1,0 +1,38 @@
+.Dd October 19, 2026
+.Dt BUILD-SIMH 1
+.Os
+.Sh NAME
+.Nm build-simh
+.Nd build the SIMH simulators prebsd needs
+.Sh SYNOPSIS
+.Nm
+.Op Ar simulator ...
+.Nm
+.Fl Fl list
+.Sh DESCRIPTION
+.Nm
+builds the simulators of
+.Pa simh.json
+(pdp11, vax780, pdp10-ka and pdp10-ki) from source trees pinned by commit, and installs them in
+.Pa simh/bin/ ,
+where
+.Xr prebsd 1
+looks first.
+Each source tree is kept in
+.Pa mirror/src/NAME.git ,
+a bare repository holding just that commit, so a build works when the upstream is gone; the network is
+used only for a commit the mirror does not have.
+Builds happen in
+.Pa build/ ,
+and a simulator in
+.Pa simh/bin/
+is replaced only after the new one has built.
+.Pp
+The tape code of the simulators is patched so that a tape file rewritten by the host while the
+simulator has it attached is not served stale
+.Pq Pa simh/patch-sim-tape.py .
+.Pp
+The PDP-10 KI10 simulator comes from Richard Cornwell's tree: the restore script of his system
+tape runs out of step on other builds.
+.Sh SEE ALSO
+.Xr prebsd 1

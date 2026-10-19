@@ -1,21 +1,20 @@
 prebsd - INSTALL
 ===============
 
-prebsd is a set of scripts; there is nothing to compile.
+prebsd is a C program (the fetch and console driver) with a few scripts.
 
 Requirements:
-  * simh (`pdp11` on the PATH)
-  * curl
-  * python3 (3.6+)
+  * a C compiler, libcurl and json-c with pkg-config to build it
+  * simh: ./build-simh builds the ones prebsd needs (git, make, python3), or `pdp11` on the PATH
+  * curl, python3 (3.6+) for the fetch script
 
 Build and install:
 
-    ./configure            # optional; sets the PREFIX
-    make                   # nothing to build
-    make check             # ./fetch lists the available images
-    make install           # installs fetch/boot.py + ini/ under PREFIX
+    ./configure            # sets the PREFIX
+    make                   # builds prebsd
+    ./build-simh           # builds the simulators into simh/bin/
+    make install           # installs prebsd, fetch, build-simh and the ini/ under PREFIX
 
 Or just run in place:
 
-    ./fetch v7-pcollinson
-    ./boot.py --ini ini/v7-pcollinson.ini
+    ./prebsd v7-pcollinson 'ls /'

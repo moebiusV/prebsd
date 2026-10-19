@@ -6,7 +6,7 @@ License:        ISC
 URL:            https://github.com/moebiusV/prebsd
 Source0:        %{name}-%{version}.tar.gz
 
-BuildArch:      noarch
+BuildRequires:  gcc, pkgconfig(libcurl), pkgconfig(json-c)
 Requires:       python3
 Requires:       curl
 Recommends:     simh
@@ -30,7 +30,10 @@ and vax780 simulators), driving the console over telnet.
 %{_libdir}/prebsd/
 %{_bindir}/prebsd-fetch
 %{_mandir}/man1/fetch.1
-%{_mandir}/man1/boot.1
+%{_mandir}/man1/prebsd.1
+%{_mandir}/man1/build-simh.1
+%{_bindir}/prebsd
+%{_bindir}/prebsd-build-simh
 
 %changelog
 * Thu Aug 28 2026 maintainer <email> - 0.1-1

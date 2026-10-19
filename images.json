@@ -84,7 +84,7 @@
         {
           "url": "https://github.com/pcollinson/unixv7-extras/raw/main/bootstrap/rp06-0.disk.gz",
           "to": "v7-rp06.disk",
-          "sha256": "100e8f0f74e6532433a85eae71946d7f68620ba1328d33ebf8539e50a2a591a9"
+          "sha256": "927d14c34fb043fdc29184338e130e477266cd8f7c43ee724f8f71ec1ee7deb5"
         }
       ],
       "mount": [
@@ -419,6 +419,7 @@
       "ini": "tops10-603-ka.ini",
       "boot": "SYSTEM>WHY RELOAD:|SCHED>DATE:|21-APR-78>TIME:|1000>STARTUP OPTION:|QUICK>(CP)",
       "ready": "(CP)",
+      "retries": 6,
       "cc": true,
       "src": false,
       "files": [
@@ -457,9 +458,11 @@
       "ini": "tops10-603-ki.ini",
       "boot": "SYSTEM>WHY RELOAD:|SCHED>DATE:|21-APR-78>TIME:|1000>STARTUP OPTION:|QUICK>(CP)",
       "ready": "(CP)",
+      "retries": 6,
       "cc": true,
       "src": false,
       "install": "pdp10/install-ki.sh",
+      "needs": "ki_dskb0.rp3",
       "files": [
         {
           "url": "https://sky-visions.com/dec/tops603/tapes/kidp_system.tap.bz2",

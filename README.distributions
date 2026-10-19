@@ -12,13 +12,14 @@ What prebsd Is
 prebsd fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the
 `pdp11` and `vax780` simulators), driving the console over telnet.  It ships
 two tools: `fetch` (download/unpack a disk image from the `images.json`
-manifest) and `boot.py` (the console driver).
+manifest) and `prebsd` (the C console driver and downloader), `build-simh` and `mirror-built`.
 
 Dependencies
 ------------
 
-Runtime only — prebsd is a set of scripts, nothing is compiled:
-  - python3 (boot.py)
+Build: a C compiler, libcurl, json-c.  Runtime:
+  - python3 (fetch, build-simh)
+  - libcurl and json-c (to build prebsd); git and make (build-simh)
   - curl (fetch)
   - simh with the `pdp11` simulator (V4-V7); 32V additionally needs `vax780`
     (the default Debian `simh` builds only MicroVAX, so compile `vax780`)
@@ -33,8 +34,9 @@ How the Build Works
 Install layout (default prefix `/usr/local`):
 
     $(bindir)/prebsd-fetch     symlink to $(libdir)/prebsd/fetch
-    $(libdir)/prebsd/          fetch, boot.py, images.json, ini/
-    $(mandir)/man1/            fetch.1, boot.1
+    $(bindir)/prebsd           symlink to $(libdir)/prebsd/prebsd
+    $(libdir)/prebsd/          prebsd, fetch, build-simh, mirror-built, images.json, simh.json, ini/
+    $(mandir)/man1/            prebsd.1, fetch.1, build-simh.1
 
 License
 -------

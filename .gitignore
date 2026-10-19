@@ -18,3 +18,13 @@ config.log
 config.status
 autom4te.cache/
 aclocal.m4
+mirror/*
+!mirror/README
+!mirror/.gitkeep
+simh/bin/
+build/
+Makefile
+.deps/
+stamp-h1
+*.o
+simh/run/

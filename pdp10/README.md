@@ -11,14 +11,14 @@ compiler literature.
 | `tops10-603-ki`  | KI10 | 4 x RP03 (`dpa`) | yes |
 
 ```
-./fetch tops10-603-ka
-SIMH=pdp10-ka ./boot.py --ini ini/tops10-603-ka.ini        # CTY on telnet 10024
-
-SIMH_KI=/path/to/pdp10-ki ./pdp10/install-ki.sh            # after ./fetch tops10-603-ki
-SIMH=pdp10-ki ./boot.py --ini ini/tops10-603-ki.ini        # CTY on telnet 10025
+./build-simh                          # once: simh/bin/pdp10-ka and pdp10-ki
+./prebsd -k tops10-603-ka             # CTY on telnet 10024, DC lines on 2021
+./prebsd -k tops10-603-ki             # the first time it makes the disks (install-ki.sh,
+                                      # about twenty minutes; kept in mirror/built/); 10025, 2022
+./prebsd -S tops10-603-ka             # stop
 ```
 
-`boot.py` answers the operator's questions on the console (`SYSTEM`, the reason for the
+`prebsd` answers the operator's questions on the console (`SYSTEM`, the reason for the
 reload, the date, the time, the start-up option) and stops when OPSER has finished its
 command file (`(CP)`).  The date is typed by the boot sequence in `images.json`: 6.03
 knows no year after 1999.  User terminals are the DC lines: telnet 2021 (KA10) or 2022

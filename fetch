@@ -92,9 +92,25 @@ dl() {  # dl URL FROM TO SHA256
         base="${base##*/}"
         base="${base%%\?*}"
     fi
-    echo "  fetch $base -> $to"
+    # the download as it came is kept in mirror/images/, so a source that goes away does not
+    # take the image with it: that copy is used when it exists (the checksum below checks it
+    # like a fresh one) and when the download fails
+    mir="${PREBSD_MIRROR:-$HERE/mirror}/images"
+    mkdir -p "$mir"
     tmp="$DEST/.fetch-$$"
-    curl -L --retry 3 -o "$tmp" "$url"
+    if [ -f "$mir/$to--$base" ]; then
+        echo "  mirror $base -> $to"
+        cp "$mir/$to--$base" "$tmp"
+    else
+        echo "  fetch $base -> $to"
+        if curl -L --fail --retry 3 -o "$tmp" "$url"; then
+            cp "$tmp" "$mir/$to--$base.part" && mv "$mir/$to--$base.part" "$mir/$to--$base"
+        else
+            rm -f "$tmp"
+            echo "  the download of $url failed and the mirror has no copy" >&2
+            return 1
+        fi
+    fi
     case "$base" in
         *.gz)
             gunzip -c "$tmp" > "$DEST/$to"
@@ -155,8 +171,8 @@ fi
 ini="$(jini "$name")"
 if [ -n "$ini" ]; then
     case "$ini" in
-        */*) echo "done.  boot with: ./boot.py --ini $ini" ;;
-        *)   echo "done.  boot with: ./boot.py --ini ini/$ini" ;;
+        */*) echo "done.  boot with: ./prebsd $ini" ;;
+        *)   echo "done.  boot with: ./prebsd ini/$ini" ;;
     esac
 else
     echo "done.  (install via the gunkies guide)"

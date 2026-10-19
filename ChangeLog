@@ -1,3 +1,8 @@
+2026-10-19  boot.py is gone: prebsd.c drives every image (Unix and TOPS-10), retries a
+            boot that hangs, can keep an image running (-k, -S), and uses simh/bin/ and the
+            local mirror.  build-simh builds the simulators from pinned sources; mirror-built
+            keeps the disks made from tapes.
+
 prebsd ChangeLog
 ===============
 

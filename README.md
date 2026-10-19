@@ -6,14 +6,26 @@ part of the pdp11-toolchain project, to run the *real* V7 compiler/assembler/
 linker against the ported ones.
 
 ```
-./prebsd ini/v7-pcollinson.ini   # boot an image (fetches the disk if missing)
-./prebsd v7-pcollinson.json      # same, by a single-image JSON manifest
-./fetch                          # list images (images.json)
-./fetch v7-pcollinson            # download + unpack one, no boot
+./build-simh                      # once: fetch and build the simulators (simh/bin/)
+./prebsd v7-pcollinson 'ls /'     # fetch what is missing, boot the image, run a command
+./prebsd tops10-603-ka            # TOPS-10 on the KA10: up when the console shows (CP)
+./prebsd -k tops10-603-ki         # leave it running (its DC lines stay up); -S stops it
+./prebsd -l                       # list the images
+./prebsd ini/v7-pcollinson.ini    # by simh config, or by a single-image JSON manifest
+./fetch v7-pcollinson             # download + unpack one, no boot (the script; prebsd -f too)
 ```
 
+## Nothing depends on the net staying up
+
+`./build-simh` fetches the simulator sources pinned in `simh.json` (open-simh for the PDP-11, VAX
+and KA10, Richard Cornwell's tree for the KI10), builds the four simulators and installs them
+in `simh/bin/`, where `prebsd` looks first.  Everything fetched or made is also kept in
+`mirror/` (git-ignored; back it up): the simulator sources as bare repositories, every
+download as it came, and the disks `prebsd` builds from tapes (they take an hour or more).  The
+mirror is used before the net is, so a vanished upstream costs nothing.  See `mirror/README`.
+
 Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), and libcurl + json-c to
-build `prebsd` (the C console driver that supersedes the Python `boot.py`).  The
+build `prebsd` (`./configure && make`; the C driver that replaced the old Python `boot.py`).  The
 tape->disk install scripts (`pdp11/installv7.py`, `vax/install32v.py`) still need
 Python 3.  Fetched images (including the pre-built `v7-bostic` disk) boot straight
 from `images/` with no other tooling.  The one build step — turning a tape into a
@@ -33,7 +45,9 @@ is needed.
   * `fetch`            download/unpack a disk image (see `images.json`)
   * `images.json`      the manifest: image -> files, ini, boot, mount commands
   * `ini/*.ini`        one simh config per image (device / CPU / memory / boot)
-  * `boot.py`          the old Python console driver (superseded by `prebsd`)
+  * `build-simh`       fetch and build the simulators named in `simh.json` into `simh/bin/`
+  * `mirror-built`     keep and restore the disks built from tapes (`mirror/built/`)
+  * `mirror/`          local copies of sources, downloads and built disks (git-ignored)
   * `dist/`            the images, gzipped, `v4-`/`v5-`/`v6-`/`v7-`/`32v-` names
   * `pdp11/`           V7 (PDP-11) tape -> disk install scripts, plus the
                        `hpuboot`/`rpuboot` boot blocks and their `.s` sources
@@ -69,13 +83,13 @@ rather than crawling the tree file-by-file.
   FUSE, unmount, then boot.
 * V7's KL11 console driver hard-codes `LCASE` (`usr/sys/dev/kl.c`), assuming a
   Model 33 Teletype - it uppercases output and lowercases typed input, so `cc
-  -S` arrives as `cc -s` (strip) and produces no `.s`.  `boot.py` sends
+  -S` arrives as `cc -s` (strip) and produces no `.s`.  `prebsd` sends
   `stty -lcase` after boot by default, restoring mixed case.  The permanent fix
   would be a kernel rebuild without `LCASE` in `kl.c`.
-* The `.ini` files enable `SET CONSOLE TELNET=10023`; `boot.py` answers the
+* The `.ini` files enable `SET CONSOLE TELNET=10023`; `prebsd` answers the
   telnet IAC negotiation so option bytes don't leak into the output.
 
-* The images with `"os": "tops10"` in `images.json` are not Unix: `boot.py` runs the
+* The images with `"os": "tops10"` in `images.json` are not Unix: `prebsd` runs the
   simulator named in `"simh"` (`pdp10-ka`, `pdp10-ki`; `$SIMH` overrides), takes the
   console port from the `.ini`, does not send `stty`, and counts the boot as done when
   the console shows the image's `"ready"` text.  See `pdp10/README.md`.

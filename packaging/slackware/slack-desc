@@ -9,7 +9,7 @@ prebsd:
 prebsd: prebsd fetches and runs Research Unix V4, V5, V6, V7 and 32V on
 prebsd: SIMH (the pdp11 and vax780 simulators), driving the console over
 prebsd: telnet. It ships fetch (download a disk image from images.json)
-prebsd: and boot.py (the console driver).
+prebsd: and prebsd (the console driver).
 prebsd:
 prebsd: Homepage: https://github.com/moebiusV/prebsd
 prebsd:

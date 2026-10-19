@@ -1,7 +1,10 @@
 @comment $NetBSD$
 bin/prebsd-fetch
 lib/prebsd/fetch
-lib/prebsd/boot.py
+lib/prebsd/prebsd
+lib/prebsd/build-simh
+lib/prebsd/mirror-built
+lib/prebsd/simh.json
 lib/prebsd/images.json
 lib/prebsd/ini/v4-aap.ini
 lib/prebsd/ini/v5-tuhs.ini
@@ -10,4 +13,5 @@ lib/prebsd/ini/v7-narukeh.ini
 lib/prebsd/ini/v7-pcollinson.ini
 lib/prebsd/ini/v7-rl.ini
 man/man1/fetch.1
-man/man1/boot.1
+man/man1/prebsd.1
+man/man1/build-simh.1

@@ -15,10 +15,14 @@
 set -eu
 HERE="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 IMG="$HERE/images"
-SIM="${SIMH_KI:-pdp10-ki}"
+SIM="${SIMH_KI:-}"
+[ -n "$SIM" ] || { SIM="$HERE/simh/bin/pdp10-ki"; [ -x "$SIM" ] || SIM=pdp10-ki; }   # ./build-simh makes it
 ZIP_URL=https://sky-visions.com/dec/tops603/tops603.zip
 ZIP_SHA=fb6e72b7a2a43c5dc34dbb0c1a40f3d0a8b58ccddf526e1d88c06bb450e98448
-[ -f "$IMG/ki-system.tap" ] || { echo "run ./fetch tops10-603-ki first" >&2; exit 1; }
+disks="ki_dskb0.rp3 ki_dskb1.rp3 ki_dskb2.rp3 ki_dskb3.rp3"
+# the disks made before are kept in mirror/built/ (see mirror-built)
+"$HERE/mirror-built" restore $disks || true
+[ -f "$IMG/ki_dskb0.rp3" ] || [ -f "$IMG/ki-system.tap" ] || { echo "run ./fetch tops10-603-ki first" >&2; exit 1; }
 if [ -f "$IMG/ki_dskb0.rp3" ]; then echo "the KI10 disks exist (images/ki_dskb0.rp3)"; exit 0; fi
 work="$(mktemp -d "${TMPDIR:-/tmp}/prebsd-ki.XXXXXX")"
 trap 'rm -rf "$work"' EXIT
@@ -46,3 +50,4 @@ pkill -P $sim 2>/dev/null || true
 kill $sim 2>/dev/null || true
 for n in 0 1 2 3; do mv "rdsk/ki_dskb$n.rp3" "$IMG/ki_dskb$n.rp3"; done
 echo "made images/ki_dskb0..3.rp3"
+"$HERE/mirror-built" save $disks

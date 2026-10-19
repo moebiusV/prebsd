@@ -1,0 +1,19 @@
+{
+ "sources": [
+  {
+   "name": "open-simh",
+   "repo": "https://github.com/open-simh/simh.git",
+   "commit": "87eb7d5e96f9ce0ee6ac183e20160e5c486b0712",
+   "targets": ["pdp11", "vax780", "pdp10-ka"],
+   "patch": "simh/patch-sim-tape.py sim_tape.c"
+  },
+  {
+   "name": "rcornwell-sims",
+   "repo": "https://github.com/rcornwell/sims.git",
+   "commit": "be8cd4e933589faf14e23eb9d31363f2ad99b4da",
+   "targets": ["pdp10-ki"],
+   "patch": "simh/patch-sim-tape.py sim_tape.c",
+   "why": "open-simh's pdp10-ki runs Cornwell's restore script out of step"
+  }
+ ]
+}

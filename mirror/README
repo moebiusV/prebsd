@@ -1,0 +1,10 @@
+Local copies, so nothing depends on the upstream staying online.  The contents are git-ignored
+(they are large); back this directory up.
+
+  src/NAME.git      the simulator source trees, one bare repository per simh.json source
+                    (./build-simh fills it, and builds from it when the upstream is gone)
+  images/           every image and tape ./fetch downloaded, as it came (TO--FILENAME)
+  built/            the disk images prebsd made itself from tapes (pdp10/install-ki.sh, the
+                    V7 and 32V installs), with their SHA256SUMS; they take hours to make
+
+PREBSD_MIRROR=/other/path moves it.
