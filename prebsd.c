@@ -289,8 +289,9 @@ static int parse_image_json(const char *path, char **ini, char **boot,
 	return (*ini && *nfiles >= 0) ? 0 : -1;
 }
 
-/* Look up a boot sequence from images.json by the ini's basename. */
-static char *lookup_boot(const char *ini)
+/* Look up a string field (boot, simh, ready, os) of the images.json entry whose `ini`
+ * has the ini's basename; NULL if there is none or it is empty. */
+static char *lookup_field(const char *ini, const char *field)
 {
 	const char *manifest = "images.json";
 	json_object *o = json_object_from_file(manifest);
@@ -309,7 +310,7 @@ static char *lookup_boot(const char *ini)
 			const char *name = json_object_object_get_ex(img, "ini", &iv) ?
 				json_object_get_string(iv) : "";
 			if (strcmp(basename((char *)name), base) == 0 &&
-			    json_object_object_get_ex(img, "boot", &bv) &&
+			    json_object_object_get_ex(img, field, &bv) &&
 			    json_object_get_string(bv)[0]) {
 				result = strdup(json_object_get_string(bv));
 				break;
@@ -318,6 +319,23 @@ static char *lookup_boot(const char *ini)
 	}
 	json_object_put(o);
 	return result;
+}
+
+/* The same field of a single-image manifest. */
+static char *json_file_field(const char *path, const char *field)
+{
+	json_object *o = json_object_from_file(path), *v;
+	char *r = NULL;
+	if (o && json_object_object_get_ex(o, field, &v) && json_object_get_string(v)[0])
+		r = strdup(json_object_get_string(v));
+	if (o)
+		json_object_put(o);
+	return r;
+}
+
+static char *lookup_boot(const char *ini)
+{
+	return lookup_field(ini, "boot");
 }
 
 /* ------------------------------------------------------------------ */
@@ -469,7 +487,7 @@ static void send_console(int fd, const char *s)
 /* simh process                                                        */
 /* ------------------------------------------------------------------ */
 
-static pid_t start_simh(const char *ini_dir, const char *base)
+static pid_t start_simh(const char *ini_dir, const char *base, const char *dflt)
 {
 	pid_t pid = fork();
 	if (pid < 0) {
@@ -488,7 +506,7 @@ static pid_t start_simh(const char *ini_dir, const char *base)
 		}
 		const char *simh = getenv("SIMH");
 		if (!simh || !*simh)
-			simh = "pdp11";
+			simh = dflt && *dflt ? dflt : "pdp11";
 		execlp(simh, simh, base, (char *)NULL);
 		perror("execlp");
 		_exit(127);
@@ -559,6 +577,7 @@ int main(int argc, char **argv)
 
 	char *ini = NULL;
 	char *boot = NULL;
+	char *simh_name = NULL, *ready = NULL, *osname = NULL;
 	const char *url[MAXFILES], *to[MAXFILES], *sha[MAXFILES];
 	int nfiles = 0;
 
@@ -570,6 +589,9 @@ int main(int argc, char **argv)
 		}
 		/* the json `ini` is used as-is: a CWD-relative or absolute path,
 		 * exactly like the .ini argument itself */
+		simh_name = json_file_field(argv[1], "simh");
+		ready = json_file_field(argv[1], "ready");
+		osname = json_file_field(argv[1], "os");
 
 		mkdir(images_dir, 0755);
 		for (int i = 0; i < nfiles; i++) {
@@ -579,7 +601,14 @@ int main(int argc, char **argv)
 	} else {
 		ini = strdup(argv[1]);
 		boot = lookup_boot(ini);
+		simh_name = lookup_field(ini, "simh");
+		ready = lookup_field(ini, "ready");
+		osname = lookup_field(ini, "os");
 	}
+	/* "os" other than unix (TOPS-10): no stty, and the boot is done when the console shows
+	 * the image's "ready" text rather than a shell prompt */
+	int is_unix = !osname || strcmp(osname, "unix") == 0;
+	const char *ready_text = ready && *ready ? ready : "# ";
 
 	if (!boot || !*boot) {
 		free(boot);
@@ -594,7 +623,7 @@ int main(int argc, char **argv)
 	printf("prebsd: simh ini %s (port %d)\n", ini, port);
 	printf("prebsd: boot sequence %s\n", boot);
 
-	pid_t pid = start_simh(ini_dir, ini_base);
+	pid_t pid = start_simh(ini_dir, ini_base, simh_name);
 	if (pid < 0)
 		return 1;
 
@@ -635,13 +664,13 @@ int main(int argc, char **argv)
 	}
 	free(seq);
 
-	/* Wait for the single-user shell prompt. */
-	int at_shell = wait_for(fd, "# ", 60);
+	/* Wait for the single-user shell prompt (or the image's ready text). */
+	int at_shell = wait_for(fd, ready_text, 60);
 
 	/* V7's KL11 console driver hard-codes LCASE (uppercases output); clear it
 	 * and wait for the shell to act on it — a fresh "# " prompt — so that a
 	 * following command's output is mixed-case. */
-	if (at_shell) {
+	if (at_shell && is_unix) {
 		size_t mark = console_len;
 		send_console(fd, "stty -lcase");
 		if (!wait_for_since(fd, "# ", 30, mark))
@@ -654,7 +683,7 @@ int main(int argc, char **argv)
 	if (cmd) {
 		size_t mark = console_len;
 		send_console(fd, cmd);
-		if (at_shell && !wait_for_since(fd, "# ", 90, mark))
+		if (at_shell && !wait_for_since(fd, ready_text, 90, mark))
 			printf("[driver] TIMEOUT waiting for command completion\n");
 	}
 
@@ -670,11 +699,26 @@ int main(int argc, char **argv)
 	printf("\n=== console ===\n%.*s\n", (int)console_len, console);
 	for (size_t i = 0; i < console_len; i++)
 		console[i] = toupper((unsigned char)console[i]);
-	int booted = has_sub("# ") || has_sub("@");
-	printf("=== [driver] booted to a shell prompt: %s ===\n",
-	       booted ? "yes" : "no");
+	int booted;
+	if (is_unix) {
+		booted = has_sub("# ") || has_sub("@");
+		printf("=== [driver] booted to a shell prompt: %s ===\n",
+		       booted ? "yes" : "no");
+	} else {
+		char up[256];
+		size_t k;
+		for (k = 0; ready_text[k] && k < sizeof up - 1; k++)
+			up[k] = toupper((unsigned char)ready_text[k]);
+		up[k] = '\0';
+		booted = has_sub(up);
+		printf("=== [driver] booted (%s on the console): %s ===\n",
+		       ready_text, booted ? "yes" : "no");
+	}
 
 	free(ini);
 	free(boot);
+	free(simh_name);
+	free(ready);
+	free(osname);
 	return booted ? 0 : 1;
 }
