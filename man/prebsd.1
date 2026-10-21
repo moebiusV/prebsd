@@ -37,9 +37,6 @@ The steps:
 Each file of the image that is missing from
 .Pa images/
 is downloaded and checked against its SHA-256.
-A downloaded file is also kept as it came in
-.Pa mirror/images/ ,
-and is used from there when the download fails or the upstream is gone.
 A file that differs from the manifest is moved aside as
 .Pa NAME.modified ,
 never overwritten.
@@ -48,8 +45,7 @@ A disk that the image makes from a tape itself (the manifest's
 .Ql install
 script, when its
 .Ql needs
-file is missing) is made; the result is kept in
-.Pa mirror/built/ .
+file is missing) is made.
 .It
 The simulator is started: the one in
 .Pa simh/bin/
@@ -108,9 +104,6 @@ How long to wait for each step; the default is 90.
 .Bl -tag -width PREBSD_MIRROR
 .It Ev SIMH
 The simulator to run, instead of the image's.
-.It Ev PREBSD_MIRROR
-The directory of the local copies (default
-.Pa mirror ) .
 .El
 .Sh FILES
 .Bl -tag -width "simh/run/NAME.pid"
@@ -120,8 +113,6 @@ the manifest; the
 directory holds the SIMH configurations
 .It Pa images/
 the disks and tapes
-.It Pa mirror/
-local copies of the downloads, the simulator sources and the built disks
 .It Pa simh/bin/
 the simulators made by
 .Xr build-simh 1

@@ -14,7 +14,7 @@ compiler literature.
 ./build-simh                          # once: simh/bin/pdp10-ka and pdp10-ki
 ./prebsd -k tops10-603-ka             # CTY on telnet 10024, DC lines on 2021
 ./prebsd -k tops10-603-ki             # the first time it makes the disks (install-ki.sh,
-                                      # about twenty minutes; kept in mirror/built/); 10025, 2022
+                                      # about twenty minutes); 10025, 2022
 ./prebsd -S tops10-603-ka             # stop
 ```
 

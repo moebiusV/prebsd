@@ -12,7 +12,7 @@
         {
           "url": "http://squoze.net/UNIX/v4/disk.rk",
           "to": "v4-rk05.disk",
-          "sha256": "517ab53bb205039a31cd80d60c0c919a05ce12ee9c69584377c518889543c8b2"
+          "sha256": "3bf36a25782d75b1787e626da81827a43c8d2754b9679c0698f77497301aa3b1"
         },
         {
           "url": "http://squoze.net/UNIX/v4/unix_v4.tap",
@@ -36,7 +36,7 @@
         {
           "url": "https://www.tuhs.org/Archive/Distributions/Research/Dennis_v5/v5root.gz",
           "to": "v5-root.disk",
-          "sha256": "4761de4dce7e3cc2fd25b66490047d42fd00077a471b1f80233efe47357ff1eb"
+          "sha256": "af573c130bc4aadb2ec3d67983e6f1687bd49b994a0fe7c5101b407dd85eec16"
         }
       ],
       "mount": [
@@ -55,17 +55,17 @@
         {
           "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk0.gz",
           "to": "v6-rk0",
-          "sha256": "dd5136f73c6cca931b72fc7fd67ca8ecb07a96d6a61ed8c5817f8e81bf46d063"
+          "sha256": "87619dd9faa099be8d491204bd47a1a3730819b45c22be32c17be6b795375225"
         },
         {
           "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk1.gz",
           "to": "v6-rk1",
-          "sha256": "2656417c59ef4d7d18868dadc1259023ead09324c775fa0d2147cadced32f8eb"
+          "sha256": "fd674b8283c71680c4f8c20eee6c3a0445ae2493b6974f7170bdc9583a02c18f"
         },
         {
           "url": "https://github.com/pcollinson/unixv6-extras/raw/main/simh/rk2.gz",
           "to": "v6-rk2",
-          "sha256": "d3d13164022a04bb53e92259ea363ef724c7e04351e2d3351f99ab874e26b8ec"
+          "sha256": "da3858c6a690fb37fd39337f42c69e1293e7b6fa51b29911ac0116a82aacb682"
         }
       ],
       "mount": [
@@ -105,7 +105,7 @@
           "url": "http://simh.trailing-edge.com/kits/uv7swre.zip",
           "from": "unix_v7_rl.dsk",
           "to": "v7-rl02.disk",
-          "sha256": "e2838dcc9f14bb056d396cccea9e830fd8b8046c0f75b9fab21735b823cc848a"
+          "sha256": "235426852d2fdc2b7b3432f46bb2174d579a6e730f84d66f1464a2ae564a1c81"
         }
       ],
       "mount": [
@@ -124,7 +124,7 @@
         {
           "url": "https://github.com/narukeh/research_unix_v7/raw/main/rp06-0.disk.xz",
           "to": "v7-narukeh-rp06.disk",
-          "sha256": "27c3bc041692c805e006588ce57c7dc32970f1796b8df44482aa367faa86be76"
+          "sha256": "a6694ace4de76d07f12314dc236d6e7b2f064e5838540584a2379c01ebbc3538"
         }
       ],
       "mount": [
@@ -383,7 +383,7 @@
         {
           "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysiii-pdp11.disk.gz",
           "to": "sysiii-pdp11.disk",
-          "sha256": "8da16f8673bb7253b27f098fef821cc8a2a4bf5b5b58af3b9285b6302e7f0deb"
+          "sha256": "f3c6097283ffc9df67e23deb29de0537dde881a3408f3d9371714a9a3ee2ca46"
         }
       ],
       "mount": [
@@ -403,7 +403,7 @@
         {
           "url": "https://raw.githubusercontent.com/moebiusV/prebsd/main/dist/sysiii-pdp11-original.disk.gz",
           "to": "sysiii-pdp11-original.disk",
-          "sha256": "b5c9b136bcd8089b4bd6d0ac15d2fd1d45ee3bc29845910d888deac8626381f8"
+          "sha256": "2b55bac0769177fe3e1038617d681aa0816f3d8d9dbdb05bb80cdadc3e216c74"
         }
       ],
       "mount": [

@@ -18,10 +18,7 @@ builds the simulators of
 where
 .Xr prebsd 1
 looks first.
-Each source tree is kept in
-.Pa mirror/src/NAME.git ,
-a bare repository holding just that commit, so a build works when the upstream is gone; the network is
-used only for a commit the mirror does not have.
+Each source tree is kept as a bare repository holding just that commit, so a build does not need the upstream again.
 Builds happen in
 .Pa build/ ,
 and a simulator in

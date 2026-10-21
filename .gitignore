@@ -18,9 +18,7 @@ config.log
 config.status
 autom4te.cache/
 aclocal.m4
-mirror/*
-!mirror/README
-!mirror/.gitkeep
+mirror/
 simh/bin/
 build/
 Makefile

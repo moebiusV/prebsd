@@ -19,6 +19,7 @@ install-data-hook:
 	$(INSTALL_SCRIPT) $(srcdir)/fetch        $(DESTDIR)$(prebsddir)/fetch
 	$(INSTALL_SCRIPT) $(srcdir)/build-simh   $(DESTDIR)$(prebsddir)/build-simh
 	$(INSTALL_SCRIPT) $(srcdir)/mirror-built $(DESTDIR)$(prebsddir)/mirror-built
+	$(INSTALL_SCRIPT) $(srcdir)/mirror-fill  $(DESTDIR)$(prebsddir)/mirror-fill
 	$(INSTALL_SCRIPT) $(srcdir)/pdp10/install-ki.sh $(DESTDIR)$(prebsddir)/pdp10/install-ki.sh
 	$(INSTALL_DATA)   $(srcdir)/images.json  $(DESTDIR)$(prebsddir)/images.json
 	$(INSTALL_DATA)   $(srcdir)/simh.json    $(DESTDIR)$(prebsddir)/simh.json
@@ -40,4 +41,4 @@ uninstall-hook:
 	      $(DESTDIR)$(mandir)/man1/prebsd.1 $(DESTDIR)$(mandir)/man1/fetch.1 \
 	      $(DESTDIR)$(mandir)/man1/build-simh.1
 
-EXTRA_DIST = vax pdp11 pdp10 ini man simh simh.json images.json fetch build-simh mirror-built mirror/README
+EXTRA_DIST = vax pdp11 pdp10 ini man simh simh.json images.json fetch build-simh mirror-built mirror-fill

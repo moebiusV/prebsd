@@ -12,7 +12,7 @@ What prebsd Is
 prebsd fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the
 `pdp11` and `vax780` simulators), driving the console over telnet.  It ships
 two tools: `fetch` (download/unpack a disk image from the `images.json`
-manifest) and `prebsd` (the C console driver and downloader), `build-simh` and `mirror-built`.
+manifest) and `prebsd` (the C console driver and downloader), and `build-simh`.
 
 Dependencies
 ------------
@@ -35,7 +35,7 @@ Install layout (default prefix `/usr/local`):
 
     $(bindir)/prebsd-fetch     symlink to $(libdir)/prebsd/fetch
     $(bindir)/prebsd           symlink to $(libdir)/prebsd/prebsd
-    $(libdir)/prebsd/          prebsd, fetch, build-simh, mirror-built, images.json, simh.json, ini/
+    $(libdir)/prebsd/          prebsd, fetch, build-simh, images.json, simh.json, ini/
     $(mandir)/man1/            prebsd.1, fetch.1, build-simh.1
 
 License

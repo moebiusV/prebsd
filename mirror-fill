@@ -1,0 +1,42 @@
+#!/bin/sh
+# mirror-fill [NAME|all] - make sure the local copy of every file of the image(s) exists in mirror/images/,
+# fetching what is missing (a download is kept as it came, after its unpacked checksum has been checked).
+set -eu
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+cd "$HERE"
+MIR="${PREBSD_MIRROR:-$HERE/mirror}/images"
+mkdir -p "$MIR"
+want="${1:-all}"
+python3 -I - "$want" <<'PY' | while IFS="$(printf '\t')" read -r url from to sha; do
+import json, sys
+w = sys.argv[1]
+for img in json.load(open('images.json'))['images']:
+    if w in ('all', img['name']):
+        for f in img.get('files', []):
+            print("\t".join([f['url'], f.get('from') or '-', f['to'], f.get('sha256') or '-']))
+PY
+    [ "$from" != "-" ] || from=
+    base="${url##*/}"; base="${base%%\?*}"
+    if [ "$base" = download ]; then base="${url%/download}"; base="${base##*/}"; fi
+    key="$MIR/$to--$base"
+    [ ! -f "$key" ] || { echo "have $to"; continue; }
+    echo "fetch $base for $to"
+    curl -L --fail --retry 3 -o "$key.part" "$url" || { rm -f "$key.part"; echo "  FAILED: $url" >&2; continue; }
+    if [ "$sha" != "-" ]; then
+        case "$base" in
+        *.gz)  got=$(gunzip -c "$key.part" | sha256sum | cut -d' ' -f1) ;;
+        *.xz)  got=$(unxz -c "$key.part" | sha256sum | cut -d' ' -f1) ;;
+        *.bz2) got=$(bunzip2 -c "$key.part" | sha256sum | cut -d' ' -f1) ;;
+        *.zip) got=$(unzip -p "$key.part" "${from:-$to}" | sha256sum | cut -d' ' -f1) ;;
+        *)     got=$(sha256sum "$key.part" | cut -d' ' -f1) ;;
+        esac
+        [ "$got" = "$sha" ] || { echo "  CHECKSUM MISMATCH for $to: kept as $key.bad" >&2; mv "$key.part" "$key.bad"; continue; }
+    fi
+    mv "$key.part" "$key"
+done
+# what the KI10 install needs besides the tape
+ZIP=tops603.zip
+if [ ! -f "$MIR/$ZIP" ]; then
+    url=$(sed -n 's/^ZIP_URL=//p' pdp10/install-ki.sh)
+    [ -z "$url" ] || curl -L --fail --retry 3 -o "$MIR/$ZIP.part" "$url" && mv "$MIR/$ZIP.part" "$MIR/$ZIP"
+fi

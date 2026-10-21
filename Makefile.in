@@ -301,7 +301,7 @@ prebsddir = $(libdir)/prebsd
 prebsd_SOURCES = prebsd.c
 prebsd_CFLAGS = $(CURL_CFLAGS) $(JSON_CFLAGS)
 prebsd_LDADD = $(CURL_LIBS) $(JSON_LIBS)
-EXTRA_DIST = vax pdp11 pdp10 ini man simh simh.json images.json fetch build-simh mirror-built mirror/README
+EXTRA_DIST = vax pdp11 pdp10 ini man simh simh.json images.json fetch build-simh mirror-built mirror-fill
 all: all-am
 
 .SUFFIXES:
@@ -803,6 +803,7 @@ install-data-hook:
 	$(INSTALL_SCRIPT) $(srcdir)/fetch        $(DESTDIR)$(prebsddir)/fetch
 	$(INSTALL_SCRIPT) $(srcdir)/build-simh   $(DESTDIR)$(prebsddir)/build-simh
 	$(INSTALL_SCRIPT) $(srcdir)/mirror-built $(DESTDIR)$(prebsddir)/mirror-built
+	$(INSTALL_SCRIPT) $(srcdir)/mirror-fill  $(DESTDIR)$(prebsddir)/mirror-fill
 	$(INSTALL_SCRIPT) $(srcdir)/pdp10/install-ki.sh $(DESTDIR)$(prebsddir)/pdp10/install-ki.sh
 	$(INSTALL_DATA)   $(srcdir)/images.json  $(DESTDIR)$(prebsddir)/images.json
 	$(INSTALL_DATA)   $(srcdir)/simh.json    $(DESTDIR)$(prebsddir)/simh.json
