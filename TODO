@@ -10,7 +10,7 @@ current scripts:
 Mapping from today's tooling:
 
     fetch               -> prebsd fetch
-    boot.py             -> prebsd run
+    boot.py             -> prebsd (done: prebsd.c replaced it)
     vax/tdcopy.py       -> prebsd fetch / run   (32V tape -> disk)
     vax/install32v.py   -> prebsd fetch / run   (32V install)
     vax/extract.py      -> prebsd fetch / run   (extract root from tape)

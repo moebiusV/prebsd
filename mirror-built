@@ -1,0 +1,42 @@
+#!/bin/sh
+# mirror-built - keep, and bring back, the disk images prebsd built itself from tapes.
+#
+#   ./mirror-built save FILE...     copy images/FILE into mirror/built/, add its SHA256SUMS line
+#   ./mirror-built restore FILE...  copy them back into images/ when images/ lacks them and
+#                                   their checksum in mirror/built/SHA256SUMS is right
+#
+# A built disk (an install from a tape) takes tens of minutes to hours, and its tape may be
+# gone from the net, so the result is worth keeping next to the downloads.  restore exits 1
+# when some file is not in the mirror, so a caller can go on to build it.
+set -eu
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+IMG="$HERE/images"
+B="${PREBSD_MIRROR:-$HERE/mirror}/built"
+mode="${1:-}"; [ $# -gt 0 ] && shift
+mkdir -p "$B" "$IMG"
+sums="$B/SHA256SUMS"; touch "$sums"
+case "$mode" in
+save)
+    for f in "$@"; do
+        [ -f "$IMG/$f" ] || { echo "mirror-built: no images/$f" >&2; exit 1; }
+        cp "$IMG/$f" "$B/.$f.new" && mv "$B/.$f.new" "$B/$f"
+        grep -v "  $f\$" "$sums" > "$sums.new" || true
+        (cd "$B" && sha256sum "$f") >> "$sums.new"
+        mv "$sums.new" "$sums"
+        echo "saved mirror/built/$f"
+    done ;;
+restore)
+    rc=0
+    for f in "$@"; do
+        [ -f "$IMG/$f" ] && continue
+        want=$(awk -v f="$f" '$2 == f { print $1 }' "$sums")
+        if [ -n "$want" ] && [ -f "$B/$f" ] && [ "$(sha256sum "$B/$f" | cut -d' ' -f1)" = "$want" ]; then
+            cp "$B/$f" "$IMG/.$f.new" && mv "$IMG/.$f.new" "$IMG/$f"
+            echo "restored images/$f from the mirror"
+        else
+            rc=1
+        fi
+    done
+    exit $rc ;;
+*) echo "usage: $0 save|restore FILE..." >&2; exit 2 ;;
+esac

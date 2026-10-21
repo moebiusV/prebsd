@@ -1,0 +1,127 @@
+.Dd October 19, 2026
+.Dt PREBSD 1
+.Os
+.Sh NAME
+.Nm prebsd
+.Nd fetch and boot an old system image on SIMH
+.Sh SYNOPSIS
+.Nm
+.Op Fl fk
+.Op Fl b Ar sequence
+.Op Fl p Ar port
+.Op Fl r Ar tries
+.Op Fl t Ar seconds
+.Ar image
+.Op Ar command
+.Nm
+.Fl l
+.Nm
+.Fl S Ar image
+.Sh DESCRIPTION
+.Nm
+fetches the files of a disk image, starts the SIMH simulator on its configuration, and drives the
+simulated console over telnet through the boot, so that the system comes up without a person at the keyboard.
+.Pp
+.Ar image
+is a name from
+.Pa images.json
+(Research Unix V4 to V7, 32V, TOPS-10 6.03 on the KA10 and the KI10), a SIMH
+.Pa .ini ,
+or a single-image JSON manifest with the fields of an
+.Pa images.json
+entry.
+.Pp
+The steps:
+.Bl -enum
+.It
+Each file of the image that is missing from
+.Pa images/
+is downloaded and checked against its SHA-256.
+A file that differs from the manifest is moved aside as
+.Pa NAME.modified ,
+never overwritten.
+.It
+A disk that the image makes from a tape itself (the manifest's
+.Ql install
+script, when its
+.Ql needs
+file is missing) is made.
+.It
+The simulator is started: the one in
+.Pa simh/bin/
+(made by
+.Xr build-simh 1 ) ,
+else
+.Ev SIMH ,
+else the one on the
+.Ev PATH .
+.It
+The boot sequence of the manifest,
+.Ql SEND>EXPECT
+pairs separated by
+.Ql | ,
+is typed at the console.
+If a step does not show its text in time the simulator is started again, up to the image's
+.Ql retries
+times: the PDP-10 boot sometimes hangs after the
+.Ql %DPA
+lines.
+.It
+For Unix, the shell is reached and the terminal made mixed case (V7's console driver uppercases).
+Another system is up when its
+.Ql ready
+text appears.
+.It
+The optional
+.Ar command
+is typed and the console output shown.
+.El
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl b Ar sequence
+Use this boot sequence instead of the image's.
+.It Fl f
+Only fetch the files.
+.It Fl k
+Leave the simulator running when the boot is done.
+Its console stays connected to a process that only logs it (to
+.Pa simh/run/NAME.console ) ;
+other telnet lines, such as the DC lines of the PDP-10, stay available.
+.It Fl l
+List the images.
+.It Fl p Ar port
+The telnet port of the console, if not the ini's
+.Ql set console telnet= .
+.It Fl r Ar tries
+Tries when the boot hangs.
+.It Fl S Ar image
+Stop an image started with
+.Fl k .
+.It Fl t Ar seconds
+How long to wait for each step; the default is 90.
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width PREBSD_MIRROR
+.It Ev SIMH
+The simulator to run, instead of the image's.
+.El
+.Sh FILES
+.Bl -tag -width "simh/run/NAME.pid"
+.It Pa images.json
+the manifest; the
+.Pa ini/
+directory holds the SIMH configurations
+.It Pa images/
+the disks and tapes
+.It Pa simh/bin/
+the simulators made by
+.Xr build-simh 1
+.It Pa simh/run/NAME.pid
+the simulator and console ports of an image started with
+.Fl k
+.El
+.Sh EXIT STATUS
+0 if the system came up, 1 if not.
+.Sh SEE ALSO
+.Xr fetch 1 ,
+.Xr build-simh 1

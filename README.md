@@ -1,31 +1,23 @@
-# prebsd - fetch and run Research Unix V4-V7 and 32V on SIMH
+# prebsd - fetch and run Research Unix V4-V7, 32V and TOPS-10 on SIMH
 
-Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11` and `vax780` simulators), driving the console over telnet and
+Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11` and `vax780` simulators), and DEC's TOPS-10 6.03 (the `pdp10-ka` and `pdp10-ki` simulators: TOPS-10 is not Unix, but it is older than BSD, and the PDP-10 is where C's floating point and 36 bit words came from), driving the console over telnet and
 dropping you at (or running a command in) the single-user shell.  Started as
 part of the pdp11-toolchain project, to run the *real* V7 compiler/assembler/
 linker against the ported ones.
 
 ```
-./prebsd ini/v7-pcollinson.ini   # boot an image (fetches the disk if missing)
-./prebsd v7-pcollinson.json      # same, by a single-image JSON manifest
-./fetch                          # list images (images.json)
-./fetch v7-pcollinson            # download + unpack one, no boot
+./build-simh                      # once: fetch and build the simulators (simh/bin/)
+./prebsd v7-pcollinson 'ls /'     # fetch what is missing, boot the image, run a command
+./prebsd tops10-603-ka            # TOPS-10 on the KA10: up when the console shows (CP)
+./prebsd -k tops10-603-ki         # leave it running (its DC lines stay up); -S stops it
+./prebsd -l                       # list the images
+./prebsd ini/v7-pcollinson.ini    # by simh config, or by a single-image JSON manifest
+./fetch v7-pcollinson             # download + unpack one, no boot (the script; prebsd -f too)
 ```
 
-Requirements: `simh` (`pdp11` for V4-V7, `vax780` for 32V), and libcurl + json-c to
-build `prebsd` (the C console driver that supersedes the Python `boot.py`).  The
-tape->disk install scripts (`pdp11/installv7.py`, `vax/install32v.py`) still need
-Python 3.  Fetched images (including the pre-built `v7-bostic` disk) boot straight
-from `images/` with no other tooling.  The one build step — turning a tape into a
-bootable disk (`pdp11/installv7.py`) — is where
-[filsys](https://github.com/moebiusV/filsys) comes in: `restor` leaves the free
-list broken, and `fsck.filsys -s` rebuilds it.  filsys links libfuse3 to build
-`mount.filsys`, so that pulls in FUSE 3, though `fsck.filsys` itself reads and
-writes the image directly and needs no FUSE.  32V needs the VAX-11/780 simulator;
-the default Debian `simh` package builds only MicroVAX, so compile `vax780` from
-open-simh (see `vax/README.md`).  The console is served over telnet
-(`SET CONSOLE TELNET`), so nothing but the simulator binary and a raw TCP driver
-is needed.
+`./build-simh` fetches the simulator sources pinned in `simh.json` (open-simh for the PDP-11, VAX and KA10,
+Richard Cornwell's tree for the KI10), builds the four simulators and installs them in `simh/bin/`, where `prebsd`
+looks first.
 
 ## Layout
 
@@ -33,7 +25,7 @@ is needed.
   * `fetch`            download/unpack a disk image (see `images.json`)
   * `images.json`      the manifest: image -> files, ini, boot, mount commands
   * `ini/*.ini`        one simh config per image (device / CPU / memory / boot)
-  * `boot.py`          the old Python console driver (superseded by `prebsd`)
+  * `build-simh`       fetch and build the simulators named in `simh.json` into `simh/bin/`
   * `dist/`            the images, gzipped, `v4-`/`v5-`/`v6-`/`v7-`/`32v-` names
   * `pdp11/`           V7 (PDP-11) tape -> disk install scripts, plus the
                        `hpuboot`/`rpuboot` boot blocks and their `.s` sources
@@ -60,6 +52,8 @@ rather than crawling the tree file-by-file.
 | `v7-bostic`      | V7, RP06, 11/70  | yes | yes | `boot` -> `hp(0,0)hptmunix`      |
 | `32v`            | 32V tape, install| yes | yes | install (`vax/install32v.py`)    |
 | `32v-disk`       | 32V, RP06, VAX   | yes | yes | —                                |
+| `tops10-603-ka`  | TOPS-10 6.03, 4 RP03, KA10 | — | no | `SYSTEM` -> `SCHED` -> date (see `pdp10/README.md`) |
+| `tops10-603-ki`  | TOPS-10 6.03, 4 RP03, KI10 | — | no | same; disks made by `pdp10/install-ki.sh` |
 
 ## Notes
 
@@ -67,11 +61,16 @@ rather than crawling the tree file-by-file.
   FUSE, unmount, then boot.
 * V7's KL11 console driver hard-codes `LCASE` (`usr/sys/dev/kl.c`), assuming a
   Model 33 Teletype - it uppercases output and lowercases typed input, so `cc
-  -S` arrives as `cc -s` (strip) and produces no `.s`.  `boot.py` sends
+  -S` arrives as `cc -s` (strip) and produces no `.s`.  `prebsd` sends
   `stty -lcase` after boot by default, restoring mixed case.  The permanent fix
   would be a kernel rebuild without `LCASE` in `kl.c`.
-* The `.ini` files enable `SET CONSOLE TELNET=10023`; `boot.py` answers the
+* The `.ini` files enable `SET CONSOLE TELNET=10023`; `prebsd` answers the
   telnet IAC negotiation so option bytes don't leak into the output.
+
+* The images with `"os": "tops10"` in `images.json` are not Unix: `prebsd` runs the
+  simulator named in `"simh"` (`pdp10-ka`, `pdp10-ki`; `$SIMH` overrides), takes the
+  console port from the `.ini`, does not send `stty`, and counts the boot as done when
+  the console shows the image's `"ready"` text.  See `pdp10/README.md`.
 
 ## Sources
 
@@ -87,6 +86,8 @@ Where each image came from, who made it, and the page it was fetched from:
 | V7 (pure install) | narukeh | <https://github.com/narukeh/research_unix_v7> (`rp06-0.disk.xz`) | <https://github.com/narukeh/research_unix_v7> |
 | V7 (tape) | Keith Bostic / gunkies | gunkies install guide | <https://gunkies.org/wiki/Installing_v7_on_SIMH> |
 | 32V (tape) | TUHS / Caldera | 32V distribution tape | <https://www.tuhs.org/Archive/> |
+| TOPS-10 6.03 KA10 (4 RP03) | PiDP-10 project, from Richard Cornwell's tapes | <https://obsolescence.dev/pidp10-sw/tops603ka.zip> | <https://obsolescence.dev/pdp10.html> |
+| TOPS-10 6.03 KI10 (system tape) | Richard Cornwell | <https://sky-visions.com/dec/tops603/tapes/kidp_system.tap.bz2> | <https://sky-visions.com/dec/tops10.shtml> |
 
 The 32V disk images (`32v-rp06.disk`, `32v-root.disk`) and the V7 disk image
 (`v7-bostic.disk`, built by `pdp11/installv7.py` from the Keith Bostic tape)

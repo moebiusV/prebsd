@@ -2,4 +2,7 @@ usr/lib/prebsd/*   usr/lib/prebsd/
 usr/lib/prebsd/ini/*   usr/lib/prebsd/ini/
 usr/bin/prebsd-fetch   usr/bin/
 usr/share/man/man1/fetch.1   usr/share/man/man1/
-usr/share/man/man1/boot.1    usr/share/man/man1/
+usr/share/man/man1/prebsd.1    usr/share/man/man1/
+usr/share/man/man1/build-simh.1    usr/share/man/man1/
+usr/bin/prebsd   usr/bin/
+usr/bin/prebsd-build-simh   usr/bin/

@@ -1,0 +1,80 @@
+#!/bin/sh
+# build-simh - fetch the simulator sources, build the SIMH versions prebsd needs, install
+# them in simh/bin/ (which prebsd looks in before $PATH).
+#
+#   ./build-simh                 build every target of simh.json that is missing
+#   ./build-simh pdp10-ki ...    only these simulators
+#   ./build-simh --list          what simh.json provides
+#
+# simh.json pins each source tree by commit.  The trees are kept in mirror/src/NAME.git
+# (a bare repository with just that commit), so a build works when the upstream is gone:
+# the network is only used for a commit the mirror does not have yet.  Builds happen in
+# build/NAME-COMMIT/, never in the mirror; a simulator in simh/bin is only replaced after
+# the new one has built.  Needs git, make, a C compiler, and python3 for the manifest.
+# The simulators are built with the options their own makefile defaults to, so ones like
+# libpcre, SDL or libpng simply stay out (the console is telnet, and the PDP-10 and PDP-11
+# simulators need none of them).
+set -eu
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+cd "$HERE"
+MIRROR="${PREBSD_MIRROR:-$HERE/mirror}"
+BIN="$HERE/simh/bin"
+JOBS="${JOBS:-$(nproc 2>/dev/null || echo 2)}"
+
+manifest() {   # manifest -> "name<TAB>repo<TAB>commit<TAB>targets<TAB>patch" lines
+    python3 -I - <<'PY'
+import json
+for s in json.load(open('simh.json'))['sources']:
+    print("\t".join([s['name'], s['repo'], s['commit'], ' '.join(s['targets']), s.get('patch') or '-']))
+PY
+}
+
+if [ "${1:-}" = "--list" ]; then
+    manifest | while IFS="$(printf '\t')" read -r name repo commit targets patch; do
+        for t in $targets; do
+            have=missing; [ -x "$BIN/$t" ] && have=built
+            printf '%-10s %-15s %.8s  %s\n' "$t" "$name" "$commit" "$have"
+        done
+    done
+    exit 0
+fi
+want="$*"
+
+mkdir -p "$MIRROR/src" "$BIN" build
+manifest | while IFS="$(printf '\t')" read -r name repo commit targets patch; do
+    todo=
+    for t in $targets; do
+        [ -x "$BIN/$t" ] && [ -z "$want" ] && continue
+        if [ -n "$want" ]; then case " $want " in *" $t "*) ;; *) continue ;; esac; fi
+        todo="$todo $t"
+    done
+    [ -n "$todo" ] || continue
+    echo "== $name $commit:$todo =="
+    git_dir="$MIRROR/src/$name.git"
+    [ -d "$git_dir" ] || git init -q --bare "$git_dir"
+    if ! git --git-dir="$git_dir" cat-file -e "$commit^{commit}" 2>/dev/null; then
+        echo "  fetching $commit from $repo"
+        git --git-dir="$git_dir" fetch -q --depth 1 "$repo" "$commit" \
+            || { echo "build-simh: $name: $commit is not in the mirror and the upstream failed" >&2; exit 1; }
+    fi
+    git --git-dir="$git_dir" cat-file -e "$commit^{commit}" \
+        || { echo "build-simh: $name: $commit missing after fetch" >&2; exit 1; }
+    src="build/$name-$(echo "$commit" | cut -c1-8)"
+    if [ ! -f "$src/.extracted" ]; then
+        rm -rf "$src"; mkdir -p "$src"
+        git --git-dir="$git_dir" archive "$commit" | tar -x -C "$src"
+        if [ "$patch" != "-" ]; then
+            # shellcheck disable=SC2086
+            (cd "$src" && python3 -I "$HERE/${patch%% *}" ${patch#* })
+        fi
+        touch "$src/.extracted"
+    fi
+    for t in $todo; do
+        echo "  make $t"
+        (cd "$src" && make "$t" -j"$JOBS" >"$HERE/build/$name-$t.log" 2>&1) \
+            || { echo "build-simh: make $t failed, see build/$name-$t.log" >&2; exit 1; }
+        [ -x "$src/BIN/$t" ] || { echo "build-simh: $src/BIN/$t was not built" >&2; exit 1; }
+        cp "$src/BIN/$t" "$BIN/.$t.new" && mv "$BIN/.$t.new" "$BIN/$t"
+        echo "  ok simh/bin/$t"
+    done
+done

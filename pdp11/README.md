@@ -86,7 +86,7 @@ The disk boot is three-stage (see `../ini/v7-keithbostic.ini`):
     boot              -> hpuboot loads /boot, the 2nd-stage boot program ("Boot:")
     hp(0,0)hptmunix   -> /boot loads the kernel -> "mem = ..." -> "#"
 
-With boot.py the whole sequence is the `boot` column in `images.json`:
+With prebsd the whole sequence is the `boot` column in `images.json`:
 `boot>:|hp(0,0)hptmunix>mem =`.
 
 Note the CPU split: the **install** (`tboot.ini`) must run an **11/45** — the

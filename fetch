@@ -1,5 +1,5 @@
 #!/bin/sh
-# fetch - download a V4/V5/V6/V7 disk image (or tape) for prebsd.
+# fetch - download a V4/V5/V6/V7/32V/TOPS-10 ... disk image (or tape) for prebsd.
 #
 #   ./fetch             list available images
 #   ./fetch <name>      download + unpack the named image into images/
@@ -47,7 +47,7 @@ d = json.load(open('images.json'))
 for img in d['images']:
     if img['name'] == name:
         for f in img.get('files', []):
-            print(f"{f['url']}\t{f.get('from', '')}\t{f['to']}\t{f.get('sha256', '')}")
+            print(f"{f['url']}\t{f.get('from') or '-'}\t{f['to']}\t{f.get('sha256') or '-'}")
         break
 PY
 }
@@ -92,9 +92,25 @@ dl() {  # dl URL FROM TO SHA256
         base="${base##*/}"
         base="${base%%\?*}"
     fi
-    echo "  fetch $base -> $to"
+    # the download as it came is kept in mirror/images/, so a source that goes away does not
+    # take the image with it: that copy is used when it exists (the checksum below checks it
+    # like a fresh one) and when the download fails
+    mir="${PREBSD_MIRROR:-$HERE/mirror}/images"
+    mkdir -p "$mir"
     tmp="$DEST/.fetch-$$"
-    curl -L --retry 3 -o "$tmp" "$url"
+    if [ -f "$mir/$to--$base" ]; then
+        echo "  mirror $base -> $to"
+        cp "$mir/$to--$base" "$tmp"
+    else
+        echo "  fetch $base -> $to"
+        if curl -L --fail --retry 3 -o "$tmp" "$url"; then
+            cp "$tmp" "$mir/$to--$base.part" && mv "$mir/$to--$base.part" "$mir/$to--$base"
+        else
+            rm -f "$tmp"
+            echo "  the download of $url failed and the mirror has no copy" >&2
+            return 1
+        fi
+    fi
     case "$base" in
         *.gz)
             gunzip -c "$tmp" > "$DEST/$to"
@@ -112,7 +128,8 @@ dl() {  # dl URL FROM TO SHA256
             unzip -o "$tmp" -d "$DEST" >/dev/null
             rm -f "$tmp"
             # the archive holds more than the disk (docs, pdf); move the disk
-            [ -n "$from" ] && [ -f "$DEST/$from" ] && mv "$DEST/$from" "$DEST/$to"
+            # (a zip of several disks lists each as its own file, from = to: they are all out now)
+            [ -n "$from" ] && [ "$from" != "$to" ] && [ -f "$DEST/$from" ] && mv "$DEST/$from" "$DEST/$to"
             ;;
         *)
             mv "$tmp" "$DEST/$to"
@@ -136,6 +153,9 @@ fetch_one() {
     echo "== $n =="
     printf '%s\n' "$files" | while IFS="$(printf '\t')" read -r url from to sha; do
         [ -n "$url" ] || continue
+        # an empty field would vanish (tab is white space to read): '-' stands for none
+        [ "$from" != "-" ] || from=
+        [ "$sha" != "-" ] || sha=
         dl "$url" "$from" "$to" "$sha"
     done
 }
@@ -151,8 +171,8 @@ fi
 ini="$(jini "$name")"
 if [ -n "$ini" ]; then
     case "$ini" in
-        */*) echo "done.  boot with: ./boot.py --ini $ini" ;;
-        *)   echo "done.  boot with: ./boot.py --ini ini/$ini" ;;
+        */*) echo "done.  boot with: ./prebsd $ini" ;;
+        *)   echo "done.  boot with: ./prebsd ini/$ini" ;;
     esac
 else
     echo "done.  (install via the gunkies guide)"
