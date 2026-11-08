@@ -1,6 +1,6 @@
 # prebsd - fetch and run Research Unix V4-V7, 32V and TOPS-10 on SIMH
 
-[up](https://moebiusv.github.io/) | [github.com/moebiusV/prebsd](https://github.com/moebiusV/prebsd) | `git clone https://github.com/moebiusV/prebsd`
+[project index](https://moebiusv.github.io/) | [github.com/moebiusV/prebsd](https://github.com/moebiusV/prebsd) | `git clone https://github.com/moebiusV/prebsd`
 
 Fetches and runs Research Unix V4, V5, V6, V7 and 32V on SIMH (the `pdp11` and `vax780` simulators), and DEC's TOPS-10 6.03 (the `pdp10-ka` and `pdp10-ki` simulators: TOPS-10 is not Unix, but it is older than BSD, and the PDP-10 is where C's floating point and 36 bit words came from), driving the console over telnet and
 dropping you at (or running a command in) the single-user shell.  Started as
